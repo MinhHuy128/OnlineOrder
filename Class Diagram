@@ -1,0 +1,158 @@
+@startuml
+'=== Strategy Pattern (Shipping Cost Calculation) ===
+interface ShippingStrategy {
+    +calculateCost(order: Order): double
+}
+
+class StandardShipping {
+    +calculateCost(order: Order): double
+}
+
+class ExpressShipping {
+    +calculateCost(order: Order): double
+}
+
+class FreeShipping {
+    +calculateCost(order: Order): double
+}
+
+ShippingStrategy <|-- StandardShipping
+ShippingStrategy <|-- ExpressShipping
+ShippingStrategy <|-- FreeShipping
+
+'=== State Pattern (Order Status) ===
+interface OrderState {
+    +processOrder(order: Order)
+    +cancelOrder(order: Order)
+    +shipOrder(order: Order)
+    +deliverOrder(order: Order)
+}
+
+class NewOrderState {
+    +processOrder(order: Order)
+    +cancelOrder(order: Order)
+    +shipOrder(order: Order)
+    +deliverOrder(order: Order)
+}
+
+class ProcessingState {
+    +processOrder(order: Order)
+    +cancelOrder(order: Order)
+    +shipOrder(order: Order)
+    +deliverOrder(order: Order)
+}
+
+class ShippedState {
+    +processOrder(order: Order)
+    +cancelOrder(order: Order)
+    +shipOrder(order: Order)
+    +deliverOrder(order: Order)
+}
+
+class DeliveredState {
+    +processOrder(order: Order)
+    +cancelOrder(order: Order)
+    +shipOrder(order: Order)
+    +deliverOrder(order: Order)
+}
+
+class CancelledState {
+    +processOrder(order: Order)
+    +cancelOrder(order: Order)
+    +shipOrder(order: Order)
+    +deliverOrder(order: Order)
+}
+
+OrderState <|-- NewOrderState
+OrderState <|-- ProcessingState
+OrderState <|-- ShippedState
+OrderState <|-- DeliveredState
+OrderState <|-- CancelledState
+
+'=== Decorator Pattern (Additional Services) ===
+abstract class Order {
+    +getDescription(): String
+    +getCost(): double
+}
+
+class BasicOrder {
+    -items: List<Item>
+    +getDescription(): String
+    +getCost(): double
+}
+
+abstract class OrderDecorator {
+    -decoratedOrder: Order
+    +OrderDecorator(order: Order)
+    +getDescription(): String
+    +getCost(): double
+}
+
+class GiftWrappingDecorator {
+    +getDescription(): String
+    +getCost(): double
+}
+
+class InsuranceDecorator {
+    +getDescription(): String
+    +getCost(): double
+}
+
+Order <|-- BasicOrder
+Order <|-- OrderDecorator
+OrderDecorator <|-- GiftWrappingDecorator
+OrderDecorator <|-- InsuranceDecorator
+
+'=== Template Method Pattern (Order Processing) ===
+abstract class OrderProcessor {
+    +final processOrder(order: Order)
+    #verifyInventory(order: Order)
+    #calculateTotal(order: Order)
+    #applyDiscounts(order: Order)
+    #generateInvoice(order: Order)
+    #notifyCustomer(order: Order)
+}
+
+class StandardOrderProcessor {
+    #verifyInventory(order: Order)
+    #calculateTotal(order: Order)
+    #applyDiscounts(order: Order)
+    #generateInvoice(order: Order)
+    #notifyCustomer(order: Order)
+}
+
+class ExpressOrderProcessor {
+    #verifyInventory(order: Order)
+    #calculateTotal(order: Order)
+    #applyDiscounts(order: Order)
+    #generateInvoice(order: Order)
+    #notifyCustomer(order: Order)
+}
+
+OrderProcessor <|-- StandardOrderProcessor
+OrderProcessor <|-- ExpressOrderProcessor
+
+'=== Main Order Class ===
+class Order {
+    -orderId: String
+    -customer: Customer
+    -items: List<Item>
+    -currentState: OrderState
+    -shippingStrategy: ShippingStrategy
+    -orderProcessor: OrderProcessor
+    -orderDecorator: Order
+    +process()
+    +cancel()
+    +ship()
+    +deliver()
+    +setShippingStrategy(strategy: ShippingStrategy)
+    +setState(state: OrderState)
+    +addService(decorator: OrderDecorator)
+    +calculateTotal(): double
+}
+
+Order *-- OrderState
+Order *-- ShippingStrategy
+Order *-- OrderProcessor
+Order *-- OrderDecorator
+@enduml
