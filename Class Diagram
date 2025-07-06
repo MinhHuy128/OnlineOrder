@@ -104,8 +104,9 @@ OrderDecorator <|-- GiftWrappingDecorator
 OrderDecorator <|-- InsuranceDecorator
 
 '=== Template Method Pattern (Order Processing) ===
-abstract class OrderProcessor {
+abstract class ProcessingOrder {
     +final processOrder(order: Order)
+    #verifyCustomer(customer: Customer)
     #verifyInventory(order: Order)
     #calculateTotal(order: Order)
     #applyDiscounts(order: Order)
@@ -113,24 +114,46 @@ abstract class OrderProcessor {
     #notifyCustomer(order: Order)
 }
 
-class StandardOrderProcessor {
+class OnlineProcessingOrder {
+    #verifyCustomer(customer: Customer)
     #verifyInventory(order: Order)
     #calculateTotal(order: Order)
     #applyDiscounts(order: Order)
     #generateInvoice(order: Order)
     #notifyCustomer(order: Order)
 }
+'=== Customer Class ===
+class Customer{
+    -cusId: String
+    -cusName: String
+    -cusPhone: String
+    -password: String
+    -cusEmail: String
+    -cusAdress: String
 
-class ExpressOrderProcessor {
-    #verifyInventory(order: Order)
-    #calculateTotal(order: Order)
-    #applyDiscounts(order: Order)
-    #generateInvoice(order: Order)
-    #notifyCustomer(order: Order)
+    +Customer()
+    +getCusId()
+    +getName()
+    +getEmail()
+    +getPhone()
+    +getAdress()
+    +getPassword()
 }
+ProcessingOrder o-- OnlineProcessingOrder
+Customer <|-- ProcessingOrder
+'=== Item class ===
+class Items{
+    -itemId: String
+    -itemName: String
+    -quantity: int
+    -price: double
 
-OrderProcessor <|-- StandardOrderProcessor
-OrderProcessor <|-- ExpressOrderProcessor
+    +Items()
+    +getItemName(): void
+    +getItemId(): void
+    +getQuantity(): int
+    +getPrice(): double
+}
 
 '=== Main Order Class ===
 class Order {
@@ -141,6 +164,8 @@ class Order {
     -shippingStrategy: ShippingStrategy
     -orderProcessor: OrderProcessor
     -orderDecorator: Order
+    +addItem()
+    +getItemList()
     +process()
     +cancel()
     +ship()
@@ -153,6 +178,8 @@ class Order {
 
 Order *-- OrderState
 Order *-- ShippingStrategy
-Order *-- OrderProcessor
+Order <|-- ProcessingOrder
 Order *-- OrderDecorator
+Order <|-- Items
+Order <|-- Customer
 @enduml

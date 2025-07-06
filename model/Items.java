@@ -1,21 +1,21 @@
 package model;
 
 public class Items{
-    private String productName;
-    private String productId;
+    private String itemName;
+    private String itemId;
     private int quanttity;
     private double price;
-    public Items(String productId, String productName, int quantity, double price){
-        this.productId = productId;
-        this.productName = productName;
+    public Items(String itemId, String itemName, int quantity, double price){
+        this.itemId = itemId;
+        this.itemName = itemName;
         this.price = price;
         this.quanttity = quantity;
     }
-    public String getProductName(){
-        return this.productName;
+    public String getItemName(){
+        return this.itemName;
     }
-    public String getProductId(){
-        return this.productId;
+    public String getItemId(){
+        return this.itemId;
     }
     public int getQuantity(){
         return this.quanttity;
