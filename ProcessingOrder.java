@@ -1,3 +1,5 @@
+import model.Customer;
+
 abstract class ProcessingOrder{
     private Order orders;
 
@@ -8,9 +10,9 @@ abstract class ProcessingOrder{
         generateInvoice(this.orders);
     }
 
+    public abstract String verifyCustomer(Customer customer);
     public abstract String verifyInventory(Order order);
     public abstract double calculateTotal(Order order);
     public abstract void generateInvoice(Order order);
-    public abstract void notifyCustomer();
 
 }

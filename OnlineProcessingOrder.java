@@ -1,4 +1,4 @@
-import model.Items;
+import model.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -6,6 +6,15 @@ import java.util.Iterator;
 import java.sql.Date;
 
 class OnlineProcessingOrder extends ProcessingOrder{
+    public String verifyCustomer(Customer customer){
+        if(!customer.getEmail().equals(customer.getEmail())){ //So sánh email người dùng hiện tại với người dùng trong database
+            return "Invalid";
+        }
+        if(!customer.getPassword().equals(customer.getPassword())){ //So sánh password người dùng hiện tại với người dùng trong database
+            return "Invalid";
+        }
+        return "Valid";
+    }
 
     public String verifyInventory(Order order){ //xác minh sản phẩm trong đơn hàng (số lượng hàng hóa lớn hơn 0)
         Iterator<Items> p = order.getProductList().iterator();
@@ -35,12 +44,32 @@ class OnlineProcessingOrder extends ProcessingOrder{
         System.out.printf("%-15s %-15s %-10s %-10s\n", "Product ID", "Product Name", "Quantity", "Price");
         while (p.hasNext()) {
             Items n = p.next();
-            System.out.printf("%-15s %-15s %-10s %-10.2f\n", n.getProductId(), n.getProductName(), n.getQuantity(), n.getPrice());
+            System.out.printf("%-15s %-15s %-10s %-10.2f\n", n.getItemId(), n.getItemName(), n.getQuantity(), n.getPrice());
         }
         System.out.println("Total: "+processed.calculateTotal(order)+"(Not apply discount!)");
         System.out.println("=".repeat(60));
     }
-    public void notifyCustomer(){
-
+    public void notifyCustomer(){ //thông báo cho khách hàng dựa trên trạng thái hiện tại của đơn hàng
+        OrderState s = new ProcessingState();
+        System.out.println(s.getStatus());
+        switch (s.getStatus()) {
+            case "New":
+                System.out.println("Your Order is new");
+                break;
+            case "Processing":
+                System.out.println("Your order is processing");
+                break;
+            case "Shipped":
+                System.out.println("Your order is shipped");
+                break;
+            case "Delivered":
+                System.out.println("Your order is delivered");
+                break;
+            case "Cancelled":
+                System.out.println("Your order is cancelled");
+                break;
+            default:
+                break;
+        }
     }
 }

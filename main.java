@@ -1,5 +1,7 @@
 public class main {
     public static void main(String[] args) {
+        Order o = new Order("1");
+        ProcessingOrder p = new OnlineProcessingOrder();
         Order order = new Order("13");
         
         System.out.println("Current status: " + order.getStatusName());
