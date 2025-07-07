@@ -7,9 +7,12 @@ class Order {
   private String orderID;
   private List<Items> items = new ArrayList<>();
   private OrderState currentState;
-  public Order(String orderID){
+  private double total;
+  private ShippingStrategy shippingStrategy;
+  public Order(String orderID,double total){
     this.orderID = orderID;
     this.currentState = new NewOrderState();
+    this.total = total;
   }
   public void addItem(Items item){ //thêm sản phẩm vào đơn hàng
         items.add(item);
@@ -46,6 +49,26 @@ class Order {
 
     public String getStatusName() {
         return this.currentState.getStatus();
+    }
+
+    
+
+    public void setShippingStrategy(ShippingStrategy strategy) {
+        this.shippingStrategy = strategy;
+    }
+
+    public double calculateShippingFee() {
+        if (shippingStrategy == null) {
+            throw new IllegalStateException("Chưa chọn phương thức vận chuyển.");
+        }
+        return shippingStrategy.calculateShippingFee(total);
+    }
+
+    public void printInvoice() {
+        System.out.println("Tổng đơn hàng: " + total + " VND");
+        System.out.println("Phương thức giao hàng: " + shippingStrategy.getMethodName());
+        System.out.println("Phí vận chuyển: " + calculateShippingFee() + " VND");
+        System.out.println("Tổng thanh toán: " + (total + calculateShippingFee()) + " VND");
     }
 
 }
