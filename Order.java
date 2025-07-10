@@ -17,9 +17,9 @@ class Order {
   public void addItem(Items item){ //thêm sản phẩm vào đơn hàng
         items.add(item);
     }
-    public List<Items> getProductList(){ //lấy danh sách sản phẩm trong đơn hàng
-        return this.items;
-    }
+  public List<Items> getProductList(){ //lấy danh sách sản phẩm trong đơn hàng
+    return this.items;
+  }
 
 
 

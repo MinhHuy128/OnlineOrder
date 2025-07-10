@@ -2,16 +2,20 @@ import model.Customer;
 
 abstract class ProcessingOrder{
     private Order orders;
+    private Customer customers;
 
-    public void Processing(Order order){
+    public void Processing(Customer customer, Order order){
         this.orders = order;
-        System.out.println(verifyInventory(this.orders));
-        System.out.println(calculateTotal(this.orders));
-        generateInvoice(this.orders);
+        this.customers = customer;
+        if(verifyCustomer(this.customers)){
+            if(verifyInventory(this.orders)){
+                generateInvoice(this.orders);
+            }
+        }
     }
 
-    public abstract String verifyCustomer(Customer customer);
-    public abstract String verifyInventory(Order order);
+    public abstract boolean verifyCustomer(Customer customer);
+    public abstract boolean verifyInventory(Order order);
     public abstract double calculateTotal(Order order);
     public abstract void generateInvoice(Order order);
 

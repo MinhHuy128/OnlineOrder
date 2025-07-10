@@ -1,33 +1,44 @@
 import model.*;
+import database.*;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.sql.Date;
 
 class OnlineProcessingOrder extends ProcessingOrder{
-    public String verifyCustomer(Customer customer){
-        if(!customer.getEmail().equals(customer.getEmail())){ //So sánh email người dùng hiện tại với người dùng trong database
-            return "Invalid";
+    public boolean verifyCustomer(Customer customer){
+        boolean result = true;
+        File_Writer fw = new File_Writer();
+        String file = "customer.csv";
+        List<String[]> li = fw.Reader(file);
+        try {
+            for(String[] i : li){
+                if(i[0].equals(customer.getCusId())){
+                    System.out.println("You already have an account!");
+                    result = false;
+                }
+            }
+            if(result == true){
+                customer.addCustomer();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if(!customer.getPassword().equals(customer.getPassword())){ //So sánh password người dùng hiện tại với người dùng trong database
-            return "Invalid";
-        }
-        return "Valid";
+        return result;
     }
 
-    public String verifyInventory(Order order){ //xác minh sản phẩm trong đơn hàng (số lượng hàng hóa lớn hơn 0)
+    public boolean verifyInventory(Order order){ //xác minh sản phẩm trong đơn hàng (số lượng hàng hóa lớn hơn 0)
         Iterator<Items> p = order.getProductList().iterator();
         while (p.hasNext()) {
             Items n = p.next();
             if(n.getQuantity()<0){
-                return ("Quantity of items in your order is not valid!");
+                return false;
             }
         }
-        return "Quantity of items in your order is valid!";
+        return true;
     }
 
     public double calculateTotal(Order order){ //Tính tổng giá đơn hàng 
+        
         Iterator<Items> r = order.getProductList().iterator();
         double total = 0;
         while (r.hasNext()) {
