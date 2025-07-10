@@ -70,6 +70,10 @@ public class Main {
         } while (choose != 0);
         // order.process();
         // System.out.println("Status: " + order.getStatusName());
+        /*
+         Order o = new Order("1");
+        ProcessingOrder p = new OnlineProcessingOrder();
+        Order order = new Order("13");
         
         // order.ship();
         // System.out.println("Status: " + order.getStatusName());
@@ -83,5 +87,9 @@ public class Main {
         // cancelledOrder.cancel();
         // System.out.println("status: " + cancelledOrder.getStatusName());
     
+    }
+         */
+        
+
     }
   }
