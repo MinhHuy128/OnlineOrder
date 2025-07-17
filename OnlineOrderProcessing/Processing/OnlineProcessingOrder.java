@@ -1,32 +1,34 @@
+package Processing;
+
 import model.*;
 import Order.Order;
 import Product.Product;
 import database.*;
-
+import Log.*;
+import Decorator.*;
 
 import java.util.List;
 import java.util.Iterator;
 
-class OnlineProcessingOrder extends ProcessingOrder{
+public class OnlineProcessingOrder extends ProcessingOrder implements Bill{
+    Logger l = Logger.getInstance("fileLog.log");
     public boolean verifyCustomer(Customer customer){
-        boolean result = true;
         File_Writer fw = new File_Writer();
-        String file = "customer.csv";
+        String file = "csvFile/customer.csv";
         List<String[]> li = fw.Reader(file);
         try {
             for(String[] i : li){
-                if(i[0].equals(customer.getCusId())){
+                if(i[1].equals(customer.getLastName())){
                     System.out.println("You already have an account!");
-                    result = false;
+                    return false;
                 }
             }
-            if(result == true){
-                customer.addCustomer();
-            }
+            customer.addCustomer();
         } catch (Exception e) {
+            l.log("Verify Customer Error", 3);
             e.printStackTrace();
         }
-        return result;
+        return true;
     }
 
     public boolean verifyInventory(Order order){ //xác minh sản phẩm trong đơn hàng (số lượng hàng hóa lớn hơn 0)
@@ -39,19 +41,20 @@ class OnlineProcessingOrder extends ProcessingOrder{
         }
         return true;
     }
+    // public double calculateTotal(Order order){ //Tính tổng giá đơn hàng 
+    //     Iterator<Product> r = order.getBuyedList().iterator();
+    //     double total = 0;
+    //     while (r.hasNext()) {
+    //         Product n = r.next();
+    //         total+=(Math.abs(n.getQuantity())*Math.abs(n.getPrice()));
+    //     }
+    //     return total;
+    // }
 
-    public double calculateTotal(Order order){ //Tính tổng giá đơn hàng 
-        
-        Iterator<Product> r = order.getBuyedList().iterator();
-        double total = 0;
-        while (r.hasNext()) {
-            Product n = r.next();
-            total+=(Math.abs(n.getQuantity())*Math.abs(n.getPrice()));
-        }
-        return total;
-    }
     public void generateInvoice(Order order){ //in ra hóa đơn
-        ProcessingOrder processed = new OnlineProcessingOrder();
+        Bill bill = new OnlineProcessingOrder();
+        bill = new GiftDecorator(bill, order);
+        
         Iterator<Product> p = order.getBuyedList().iterator();
         System.out.println(" ".repeat(23)+"Order Invoices"+" ".repeat(23));
         System.out.println("=".repeat(60));
@@ -60,8 +63,13 @@ class OnlineProcessingOrder extends ProcessingOrder{
             Product n = p.next();
             System.out.printf("%-15s %-10s %-10.2f\n", n.getProductName(), n.getQuantity(), n.getPrice());
         }
-        System.out.println("Total: "+processed.calculateTotal(order)+"(Not apply discount!)");
+        System.out.println("Total: "+bill.export()+"(Not apply discount!)");
+        bill = new DiscountDecorator(bill, order, 10);
+        bill.export();
         System.out.println("=".repeat(60));
+    }
+    public double export(){
+        return 1.0;
     }
     // public void notifyCustomer(){ //thông báo cho khách hàng dựa trên trạng thái hiện tại của đơn hàng
     //     int i = 0;

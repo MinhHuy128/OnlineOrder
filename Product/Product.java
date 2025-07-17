@@ -1,9 +1,6 @@
 package Product;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -90,8 +87,6 @@ abstract public class Product {
         System.out.println("We don't have this product yet...");
     }
     public void getStoredList(){
-        double s = 0;
-        int j = 0;
         File_Writer fw = new File_Writer();
         List<String[]> li = fw.Reader(CSV_PATH);
         System.out.println("=".repeat(50));
