@@ -1,13 +1,12 @@
 package model;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import database.*;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import database.*;
 
 public class Customer {
     private static int count = 0;
@@ -17,11 +16,11 @@ public class Customer {
     private String cusPhone;
     private String cusEmail;
     private String cusAdress;
-    private String file = "customer.csv";
+    private String file = "csvfile/customer.csv";
 
     public void addCustomer() {
         File_Writer fw = new File_Writer();
-        FileWriter writer = fw.Writer(this.file);
+        BufferedWriter writer = fw.Writer(this.file);
         try {
             writer.write(cusId + ", ");
             writer.write(lastName + ", ");
@@ -35,31 +34,32 @@ public class Customer {
             e.printStackTrace();
         }
     }
-    public void remCustomer(String target){
+
+    public void remCustomer(String target) {
         String line;
         List<String[]> lines = new ArrayList<>();
         try {
             BufferedReader b = new BufferedReader(new FileReader(this.file));
             String r = "";
-            while((line = b.readLine()) != null){
+            while ((line = b.readLine()) != null) {
                 String[] data = line.split(",");
                 lines.add(data);
             }
             b.close();
-            lines.removeIf(l->l[0].equals(target));
-            BufferedWriter w  =new BufferedWriter(new FileWriter(this.file));
-            for(String[] i : lines){
+            lines.removeIf(l -> l[0].equals(target));
+            BufferedWriter w = new BufferedWriter(new FileWriter(this.file));
+            for (String[] i : lines) {
                 r = String.join(",", i);
-                w.write(r+"\n");
+                w.write(r + "\n");
             }
             w.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public void setCustomer(String firstName, String lastName, String
-    cusEmail, String cusPhone, String cusAdress){
-        this.cusId = "C"+count++;
+
+    public void setCustomer(String firstName, String lastName, String cusEmail, String cusPhone, String cusAdress) {
+        this.cusId = "C" + count++;
         this.firstName = firstName;
         this.lastName = lastName;
         this.cusEmail = cusEmail;

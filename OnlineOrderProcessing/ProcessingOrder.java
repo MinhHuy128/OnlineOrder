@@ -1,19 +1,24 @@
-import model.Customer;
+import model.*;
+import Order.Order;
 
 abstract class ProcessingOrder{
     private Order orders;
     private Customer customers;
 
-    public void Processing(Customer customer, Order order){
+    public boolean Processing(Order order){
         this.orders = order;
-        this.customers = customer;
-        if(verifyCustomer(this.customers)){
-            if(verifyInventory(this.orders)){
-                generateInvoice(this.orders);
-            }
+        if(verifyInventory(order)){
+            generateInvoice(order);
+            return true;
+        }
+        else{
+            return false;
         }
     }
-
+    public boolean customerVerify(Customer customer){
+        this.customers = customer;
+        return verifyCustomer(customer);
+    }
     public abstract boolean verifyCustomer(Customer customer);
     public abstract boolean verifyInventory(Order order);
     public abstract double calculateTotal(Order order);

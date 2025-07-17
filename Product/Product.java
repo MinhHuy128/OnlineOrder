@@ -1,10 +1,10 @@
 package Product;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
+
+import database.File_Writer;
 
 abstract public class Product {
     private String color;
@@ -14,9 +14,11 @@ abstract public class Product {
     private int amountInStore;
     private String productName;
     private String size;
-    private static final String CSV_PATH = "item_list.csv";
+    private int quantity;
+    private static final String CSV_PATH = "csvFile/item_list.csv";
 
-    public Product(String productName, String color, double price, double length, double width, String size, int amountInStore) {
+    public void setProduct(String productName, String color, double price, double length, double width, String size,
+            int amountInStore) {
         this.productName = productName;
         this.color = color;
         this.price = price;
@@ -32,7 +34,8 @@ abstract public class Product {
         this.updateCSV(this.productName);
     }
 
-    public void updateCSV(String productName, String color, double price, double length, double width, String size, int amountInStore) {
+    public void updateCSV(String productName, String color, double price, double length, double width, String size,
+            int amountInStore) {
         String oldProductName = this.productName; // Store the old product name for updating
         this.productName = productName;
         // Update the product details
@@ -48,48 +51,80 @@ abstract public class Product {
     public void updateCSV(String oldProductName) {
         StringBuilder sb = new StringBuilder();
         sb.append(this.productName).append(",")
-            .append(this.color).append(",")
-            .append(this.price).append(",")
-            .append(this.length).append(",")
-            .append(this.width).append(",")
-            .append(this.size).append(",")
-            .append(this.amountInStore).append("\n");
-        
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_PATH, false))) {
-            // Only change the line that needs to be updated not the entire file
-            // Identify the line to be updated and replace it with the new details
-            try (BufferedReader reader = new BufferedReader(new FileReader(CSV_PATH))) {
-                String line;
-                boolean found = false;
-                while ((line = reader.readLine()) != null) {
-                    if (line.startsWith(oldProductName + ",")) {
-                        // Found the line to update
-                        writer.write(sb.toString());
-                        found = true;
-                    } else {
-                        // Write the old line back
-                        writer.write(line + "\n");
-                    }
-                }
-                if (!found) {
-                    // If the product was not found, append it
-                    writer.write(sb.toString());
+                .append(this.color).append(",")
+                .append(this.price).append(",")
+                .append(this.length).append(",")
+                .append(this.width).append(",")
+                .append(this.size).append(",")
+                .append(this.amountInStore).append("\n");
+
+        File_Writer fw = new File_Writer();
+        List<String[]> li = fw.Reader(CSV_PATH);
+        BufferedWriter w = fw.Writer(CSV_PATH);
+        try {
+            for (String[] i : li) {
+                if (oldProductName.equals(i[0].trim())) {
+                    System.out.println("We already have this product in stored...");
+                    return;
                 }
             }
-        }
-        catch (IOException e) {
+            w.write(sb.toString());
+            w.close();
+        } catch (IOException e) {
+            System.out.println("Cannot Write in CSV File...");
             e.printStackTrace();
         }
     }
-    
+
+    // Khanh's Work
+    public void setCustomerProduct(String productName, int quantity) {
+        File_Writer fw = new File_Writer();
+        List<String[]> li = fw.Reader(CSV_PATH);
+        for (String[] i : li) {
+            if (productName.equals(i[0])) {
+                this.setProduct(i[0].trim(), i[1].trim(), DoubleParsing(i[2]), DoubleParsing(i[3]), DoubleParsing(i[4]),
+                        i[5].trim(), IntegerParsing(i[6]));
+                this.quantity = quantity;
+                return;
+            }
+        }
+        System.out.println("We don't have this product yet...");
+    }
+
+    public void getStoredList() {
+        File_Writer fw = new File_Writer();
+        List<String[]> li = fw.Reader(CSV_PATH);
+        System.out.println("=".repeat(50));
+        System.out.printf("%-15s %-10s %-10s\n", "Product Name", "In Stored", "Price");
+        for (String[] i : li) {
+            System.out.printf("%-15s %-10s %-10s\n", i[0], i[6], i[2]);
+        }
+        System.out.println("=".repeat(50));
+    }
+
+    public double DoubleParsing(String s) {
+        double d = Double.parseDouble(s.trim());
+        return d;
+    }
+
+    public int IntegerParsing(String s) {
+        int i = Integer.parseInt(s.trim());
+        return i;
+    }
+
+    public int getQuantity() {
+        return this.quantity;
+    }
+
+    // End of Khanh's Work
     public void add(int amount) {
         this.update(amount);
     }
-    
+
     public void remove(int amount) {
         this.update(-amount);
     }
-    
+
     private void update(int amount) {
         this.amountInStore += amount;
         if (this.amountInStore < 0) {
@@ -164,8 +199,8 @@ abstract public class Product {
     @Override
     public String toString() {
         return String.format(
-            "Product Name: %s, Color: %s, Price: %.2f, Length: %.2f, Width: %.2f, Size: %s, Amount in Store: %d",
-            productName, color, price, length, width, size, amountInStore
-        );
+                "Product Name: %s, Color: %s, Price: %.2f, Length: %.2f, Width: %.2f, Size: %s, Amount in Store: %d",
+                productName, color, price, length, width, size, amountInStore);
     }
+
 }
