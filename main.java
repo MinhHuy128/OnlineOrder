@@ -1,6 +1,8 @@
 import java.util.Scanner;
 import model.*;
 import Order.Order;
+import Processing.OnlineProcessingOrder;
+import Processing.ProcessingOrder;
 import Product.Pants;
 import Product.Product;
 import Product.Shirt;
@@ -62,16 +64,14 @@ public class Main {
                     String adress = input.nextLine();
                     c.setCustomer(first, last, email, phone, adress);
                     if (pr.customerVerify(c)) {
-                        int choo = -1;
                         do {
-                            System.out.print("1. Create Order:\nchoose: ");
-                            choo = input.nextInt();
+                            System.out.print("1. Create Order:\n2. Cancel Order:\nchoose: ");
+                            choose = input.nextInt();
                             input.nextLine();
-                            switch (choo) {
+                            switch (choose) {
                                 case 1: {
-                                    int ch = -1;
                                     int run = -1;
-                                    int chs = -1;
+                                    int ch = -1;
                                     do {
                                         do {
                                             p.getStoredList();
@@ -100,9 +100,9 @@ public class Main {
                                         do {
                                             System.out.println(
                                                     "1. List of Item you have bought.\n2. Confirm\n3. Back:\nchoose: ");
-                                            chs = input.nextInt();
+                                            ch = input.nextInt();
                                             input.nextLine();
-                                            switch (chs) {
+                                            switch (ch) {
                                                 case 1:
                                                     o.printBuyedList();
                                                     break;
@@ -116,39 +116,29 @@ public class Main {
                                                     }
                                                     break;
                                                 case 3:
-                                                    run = -1;
-                                                    ch = -1;
+                                                    choose = 0;
+                                                    ch = 0;
                                                     break;
                                             }
-                                        } while (chs != 0);
-                                    } while (ch != 0);
+                                        } while (ch != 0);
+                                    } while (choose != 0);
+                                    break;
+                                }
+                                case 2:{
+                                    o.getBuyedList().clear();
+                                    if(o.getBuyedList().isEmpty()){
+                                        System.out.println("Your Order have been deleted!");
+                                    }
                                     break;
                                 }
                             }
-                        } while (choo != 0);
+                        } while (choose != 0);
                     } else {
                         System.out.println("Your account have not been verify");
                     }
             }
         } while (choose != 0);
+        input.close();
     }
 }
-/*
- * // Order o = new Order("1");
- * ProcessingOrder p = new OnlineProcessingOrder();
- * Order order = new Order("13");
- * 
- * // order.ship();
- * // System.out.println("Status: " + order.getStatusName());
- * 
- * // order.deliver();
- * // System.out.println("Status : " + order.getStatusName());
- * 
- * // order.cancel();
- * 
- * // Order cancelledOrder = new Order("5");
- * // cancelledOrder.cancel();
- * // System.out.println("status: " + cancelledOrder.getStatusName());
- * 
- * }
- */
+

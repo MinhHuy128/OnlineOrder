@@ -6,16 +6,17 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import Log.*;
 
 public class File_Writer {
     BufferedWriter file_writer;
     BufferedReader buff_reader;
-
+    Logger l = Logger.getInstance("fileLog.log");
     public BufferedWriter Writer(String file_path){
         try{
             this.file_writer = new BufferedWriter(new FileWriter(file_path, true));
         }catch(Exception e){
-            System.out.println("Cannot Write!");
+            l.log("Cannot Write in File", 3);
             e.printStackTrace();
         }
         return file_writer;
@@ -31,7 +32,7 @@ public class File_Writer {
                 datas.add(data);
             }
         } catch (Exception e) {
-            System.out.println("Cannot Read!");
+            l.log("Cannot Read File", 3);
             e.printStackTrace();
         }
         return datas;

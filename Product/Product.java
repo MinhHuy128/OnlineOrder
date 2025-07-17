@@ -92,6 +92,7 @@ abstract public class Product {
     }
 
     public void getStoredList() {
+
         File_Writer fw = new File_Writer();
         List<String[]> li = fw.Reader(CSV_PATH);
         System.out.println("=".repeat(50));
