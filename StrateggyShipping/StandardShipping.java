@@ -1,3 +1,5 @@
+package StrateggyShipping;
+
 public class StandardShipping implements ShippingStrategy {
     @Override
     public double calculateShippingFee(double orderTotal) {
@@ -6,6 +8,6 @@ public class StandardShipping implements ShippingStrategy {
 
     @Override
     public String getMethodName() {
-        return "Giao hàng tiêu chuẩn";
+        return "Standard Shipping";
     }
 }
