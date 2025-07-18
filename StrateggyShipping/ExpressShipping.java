@@ -1,3 +1,5 @@
+package StrateggyShipping;
+
 public class ExpressShipping implements ShippingStrategy {
     @Override
     public double calculateShippingFee(double orderTotal) {
@@ -6,6 +8,6 @@ public class ExpressShipping implements ShippingStrategy {
 
     @Override
     public String getMethodName() {
-        return "Giao hàng nhanh";
+        return "Express Shipping";
     }
 }

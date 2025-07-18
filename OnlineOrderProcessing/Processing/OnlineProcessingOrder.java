@@ -6,6 +6,7 @@ import Product.Product;
 import database.*;
 import Log.*;
 import Decorator.*;
+import StrateggyShipping.*;
 
 import java.util.List;
 import java.util.Iterator;
@@ -51,11 +52,11 @@ public class OnlineProcessingOrder extends ProcessingOrder implements Bill{
     //     return total;
     // }
 
-    public void generateInvoice(Order order){ //in ra hóa đơn
+    public void generateInvoice(Order order, ShippingStrategy transport){ //in ra hóa đơn
         Bill bill = new OnlineProcessingOrder();
         bill = new GiftDecorator(bill, order);
-        
         Iterator<Product> p = order.getBuyedList().iterator();
+        System.out.println("=".repeat(60));
         System.out.println(" ".repeat(23)+"Order Invoices"+" ".repeat(23));
         System.out.println("=".repeat(60));
         System.out.printf("%-15s %-15s %-10s %-10s\n", "Product ID", "Product Name", "Quantity", "Price");
@@ -63,9 +64,14 @@ public class OnlineProcessingOrder extends ProcessingOrder implements Bill{
             Product n = p.next();
             System.out.printf("%-15s %-10s %-10.2f\n", n.getProductName(), n.getQuantity(), n.getPrice());
         }
-        System.out.println("Total: "+bill.export()+"(Not apply discount!)");
+        System.out.println("=".repeat(60));
+        System.out.println("Transport method: "+transport.getMethodName());
+        System.out.println("Total: "+bill.export()+"(Not apply discount! & Not include Shipping fee!)");
         bill = new DiscountDecorator(bill, order, 10);
-        bill.export();
+
+        double finaltotal = bill.export();
+        System.out.println("Shipping fee: " + transport.calculateShippingFee(finaltotal));
+        System.out.println("Total: "+(finaltotal+transport.calculateShippingFee(finaltotal))+"(With Discount and Shipping Fee)");
         System.out.println("=".repeat(60));
     }
     public double export(){
