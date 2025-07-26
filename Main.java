@@ -89,7 +89,6 @@ public class Main {
             } else {
                 System.out.println("1. View Invoice");
                 System.out.println("2. View Order Details");
-                // System.out.println("3. View Order Status");
                 System.out.println("-1. Exit");
             }
             
@@ -138,7 +137,6 @@ public class Main {
                     clearTerminal();
                     System.out.println("============== Order Details ==============");
                     System.out.println(order.getOrderDetails());
-                    System.out.println("Total already included shipping and wrapping costs.");
                     scanner.nextLine();
                     break;
                     

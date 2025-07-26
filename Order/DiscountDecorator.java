@@ -25,7 +25,6 @@ public class DiscountDecorator extends OrderDecorator {
         String baseDetails = order.getOrderDetails();
         
         // Add discount-specific information
-        return baseDetails + String.format("\nDiscount Applied: %.1f%%", this.discountRate * 100) +
-            String.format("\nTotal after Discount: $%.2f", calculateTotal());
+        return baseDetails + String.format("\nDiscount Applied: %.1f%%", this.discountRate * 100);
     }
 }

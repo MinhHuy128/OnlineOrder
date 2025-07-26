@@ -31,7 +31,7 @@ public class OnlineOrderProcessing extends ProcessingOrder {
     }
 
     @Override
-    public boolean verifyCustomer(Customer customer) { //xác minh khách hàng
+    public boolean verifyCustomer(Customer customer) {
         CustomerManager manager = new CustomerManager();
         Customer customerOfThisOrder = customer;
         Customer customerFound = manager.findCustomerById(customerOfThisOrder.getCustomerId());

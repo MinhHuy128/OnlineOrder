@@ -46,16 +46,15 @@ public class CustomerManager {
         boolean removed = this.customerList.removeIf(customer -> 
             customer.getCustomerId().equals(customerId));
         if (removed) {
-            this.saveCustomersToCSV(); // Persist changes
+            this.saveCustomersToCSV(); 
         }
         return removed;
     }
 
     public List<Customer> getAllCustomers() {
-        return new ArrayList<>(this.customerList); // Return copy to prevent external modification
+        return new ArrayList<>(this.customerList); 
     }
 
-    // Load all this.customerList from CSV at startup
     private void loadCustomersFromCSV() {
         try (BufferedReader reader = new BufferedReader(new FileReader(this.csvFilePath))) {
             String line;

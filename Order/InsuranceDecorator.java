@@ -23,7 +23,6 @@ public class InsuranceDecorator extends OrderDecorator {
         String baseDetails = order.getOrderDetails();
         
         // Add insurance-specific information
-        return baseDetails + String.format("\nInsurance Fee: $%.2f", this.insuranceFee) +
-               String.format("\nTotal with Insurance: $%.2f", calculateTotal());
+        return baseDetails + String.format("\nInsurance Fee: $%.2f", this.insuranceFee);
     }
 }

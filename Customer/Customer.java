@@ -8,7 +8,7 @@ import Log.Logger;
 public class Customer {
     private static int customerCount = 0;
     private static boolean isFirstRun = false;
-    private static final Logger logger = Logger.getInstance("logFIle.log");
+    private static final Logger logger = Logger.getInstance("logFile.log");
     private  final String CSV_PATH = "CSVs/customer.csv";
     private String customerId;
     private String name;

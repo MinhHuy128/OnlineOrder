@@ -25,8 +25,7 @@ public class GiftDecorator extends OrderDecorator {
         String baseDetails = order.getOrderDetails();
         
         // Add gift-specific information
-        return baseDetails + String.format("\nGift Wrap Fee: $%.2f", this.giftAmount) +
-               String.format("\nTotal with Gift Wrap: $%.2f", calculateTotal());
+        return baseDetails + String.format("\nGift Wrap Fee: $%.2f", this.giftAmount);
     }
     
 }

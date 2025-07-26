@@ -18,13 +18,12 @@ public class Order {
     private String orderId;
     private double totalAmount;
     private static int orderCounter = 0;
-    // private static final Logger logger = Logger.getInstance("logFile.log");
 
     public Order(Customer customerOfThisOrder) {
         this.customerOfThisOrder = customerOfThisOrder;
         // Initialize the order with an empty cart and set the initial state
         this.currentState = new OrderState.NewOrderState(); 
-        this.orderId = String.format("OId%5d", ++orderCounter);
+        this.orderId = String.format("OId%05d", ++orderCounter);
         this.productsInCart = new HashMap<>();
         this.productManager = ProductManager.getInstance();
         System.out.println("New order created with state: " + currentState.getStateName());
@@ -104,11 +103,6 @@ public class Order {
 
             if (this.productsInCart.get(product) <= 0) {
                 this.productsInCart.remove(product);
-                // System.out.println("Removed product: " + product.getName());
-            }
-            else {
-                // System.out.println("Reduced quantity of product: " + product.getName() + 
-                    // " to " + this.productsInCart.get(product));
             }
         }
         else {
@@ -221,6 +215,6 @@ public class Order {
     }
 
     public HashMap<Product, Integer> getProductsInCart() {
-        return new HashMap<>(productsInCart); // Return a copy to prevent external modification
+        return new HashMap<>(productsInCart);
     }
 }
