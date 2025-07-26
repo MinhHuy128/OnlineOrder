@@ -1,32 +1,34 @@
 package OrderState;
-import Order.*;
+import Order.Order;
 
-public class NewOrderState  implements OrderState{
+public class NewOrderState implements IOrderState {
+
     @Override
-    public void process(Order order){
-      System.out.println("Processing order...");
-      order.setState(new ProcessingState()).process(order);
+    public void processOrder(Order order) {
+        System.out.println("Order is still in the making, can not process yet: " + order.getOrderDetails());
+        order.setState(new ProcesingState());
     }
 
     @Override
-    public void cancel(Order order){
-      System.out.println("Order cancelled");
-      order.setState(new CancelledState());
+    public void cancelOrder(Order order) {
+        System.out.println("Order cancelled:\n");
+        order.setState(new CancelledState()); // Transition to Cancelled State
+        System.out.println(order.getOrderDetails());
     }
 
     @Override
-    public void ship(Order order){
-      System.out.println("Cannot ship order - not processed yet");
-    }
-    @Override
-    public void deliver(Order order){
-      System.out.println("Cannot deliver order - not shipped yet");
+    public void shipOrder(Order order) {
+        System.out.println("Cannot ship a new order:\n" + order.getOrderDetails());
     }
 
     @Override
-    public String getStatus(){
-        return "New";
+    public void deliverOrder(Order order) {
+        System.out.println("Cannot deliver a new order:\n" + order.getOrderDetails());
     }
 
-
+    @Override
+    public String getStateName() {
+        return "New Order State";
+    }
+    
 }
