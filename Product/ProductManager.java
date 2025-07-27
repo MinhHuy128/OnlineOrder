@@ -26,7 +26,7 @@ public class ProductManager {
             this.allProducts = ProductCSVReader.readProductsFromCSV(PRODUCTS_CSV_FILE);
         } catch (IOException e) {
             System.err.println("Error loading products: " + e.getMessage());
-            this.allProducts = null; // Empty list if loading fails
+            this.allProducts = new ArrayList<>(); // Empty list if loading fails
         }
     }
 
