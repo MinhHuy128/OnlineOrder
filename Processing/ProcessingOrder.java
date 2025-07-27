@@ -24,7 +24,7 @@ public abstract class ProcessingOrder{
             // Set state to processing before generating invoice
             this.orders.setState(new ProcesingState());
             generateInvoice();
-            this.orders.setCurrentState(new ShippingState());
+            this.orders.setState(new ShippingState());
         }
         else{
             System.out.println("Your Order have not been verify");
@@ -46,10 +46,6 @@ public abstract class ProcessingOrder{
     public void setState(IOrderState state) {
         this.state = state;
         System.out.println("Order state changed to: " + state.getStateName());
-    }
-
-    public Order getOrders() {
-        return orders;
     }
 
     public void getCustomers() {
