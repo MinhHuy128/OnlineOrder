@@ -1,7 +1,7 @@
 package OrderState;
 import Order.Order;
 
-public class ProcesingState implements IOrderState {
+public class ProcessingState implements IOrderState {
 
     @Override
     public void processOrder(Order order) {
