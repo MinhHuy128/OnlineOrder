@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -22,11 +23,15 @@ public class Logger {
 
     public static Logger getInstance(String logFilePath) {
         Path path = Paths.get(logFilePath);
-        // if (!Files.exists(path)) {
-        //     throw new FileNotFoundException (
-        //         String.format("Invalid path to log file: %s", path);
-        //     );
-        // }
+        if (!Files.exists(path)) {
+            System.out.println("Log file does not exist, creating a new one.");
+            try {
+                Files.createFile(path);
+            } catch (IOException e) {
+                System.err.println("Error creating log file: " + e.getMessage());
+                return null;
+            }
+        }
 
         if (INSTANCE == null) {
             INSTANCE = new Logger(logFilePath);

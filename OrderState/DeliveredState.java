@@ -1,29 +1,31 @@
 package OrderState;
-import Order.*;
+import Order.Order;
 
-public class DeliveredState implements OrderState{
-    @Override
-    public void process(Order order){
-      System.out.println("Order already delivered");
-    }
+public class DeliveredState implements IOrderState {
 
     @Override
-    public void cancel(Order order){
-      System.out.println("Cannot cancel order - already delivered");
-      
+    public void processOrder(Order order) {
+        System.out.println("Cannot process a delivered order: " + order.getOrderDetails());
     }
 
     @Override
-    public void ship(Order order){
-      System.out.println("Order already delivered");
-    }
-    @Override
-    public void deliver(Order order){
-      System.out.println("Order already delivered");
+    public void cancelOrder(Order order) {
+        System.out.println("Cannot cancel a delivered order: " + order.getOrderDetails());
     }
 
     @Override
-    public String getStatus(){
-        return "Delivered";
+    public void shipOrder(Order order) {
+        System.out.println("Cannot ship a delivered order: " + order.getOrderDetails());
     }
+
+    @Override
+    public void deliverOrder(Order order) {
+        System.out.println("Order is already delivered: " + order.getOrderDetails());
+    }
+
+    @Override
+    public String getStateName() {
+        return "Delivered State";
+    }
+    
 }
