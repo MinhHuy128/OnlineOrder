@@ -1,13 +1,14 @@
 package Customer;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import Log.Logger;
 
 public class CustomerManager {
     private List<Customer> customerList;
-    private String csvFilePath = "CSVs/customer.csv";
+    private String csvFilePath = Paths.get("CSVs", "customer.csv").toString();
     private static final String CSV_HEADER = "CustomerId,Name,Email,PhoneNumber,Address";
     private static final Logger logger = Logger.getInstance("logFile.log");
 

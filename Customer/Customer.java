@@ -3,13 +3,15 @@ package Customer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
+
 import Log.Logger;
 
 public class Customer {
     private static int customerCount = 0;
     private static boolean isFirstRun = false;
     private static final Logger logger = Logger.getInstance("logFile.log");
-    private  final String CSV_PATH = "CSVs/customer.csv";
+    private  final String CSV_PATH = Paths.get("CSVs", "customer.csv").toString();
     private String customerId;
     private String name;
     private String email;

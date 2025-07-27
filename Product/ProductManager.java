@@ -1,6 +1,7 @@
 package Product;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,7 +9,7 @@ import java.util.stream.Collectors;
 public class ProductManager {
     private static ProductManager instance;
     private List<Product> allProducts;
-    private static final String PRODUCTS_CSV_FILE = "CSVs/products.csv";
+    private static final String PRODUCTS_CSV_FILE = Paths.get("CSVs", "products.csv").toString();
 
     private ProductManager() {
         loadProducts();
