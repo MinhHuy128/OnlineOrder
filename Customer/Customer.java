@@ -64,10 +64,6 @@ public class Customer {
                 customerId, name, email, phoneNumber, address);
     }
 
-    public int getCustomerCount() {
-        return customerCount;
-    }
-
     public String getCustomerId() {
         return customerId;
     }

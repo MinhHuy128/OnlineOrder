@@ -21,12 +21,6 @@ public abstract class OrderDecorator extends Order {
     }
     
     @Override
-    public void setCurrentState(IOrderState state) {
-        // Delegate to setState for consistency
-        this.setState(state);
-    }
-    
-    @Override
     public IOrderState getCurrentState() {
         return order.getCurrentState();
     }

@@ -1,18 +1,13 @@
 package Order;
 
 import java.util.HashMap;
-import java.util.List;
-
 import OrderState.IOrderState;
 import Product.Product;
-import Product.ProductManager;
 import Customer.Customer;
-// import Log.Logger;
 
 
 public class Order {
     private HashMap<Product, Integer> productsInCart;
-    private ProductManager productManager;
     protected IOrderState currentState;
     private Customer customerOfThisOrder;
     private String orderId;
@@ -25,24 +20,9 @@ public class Order {
         this.currentState = new OrderState.NewOrderState(); 
         this.orderId = String.format("OId%05d", ++orderCounter);
         this.productsInCart = new HashMap<>();
-        this.productManager = ProductManager.getInstance();
         System.out.println("New order created with state: " + currentState.getStateName());
     }
 
-    public void addProductToCart(String productName, int quantity) {
-        Product product = getProductByName(productName);
-        if (product == null) {
-            System.out.println("Product not found: " + productName);
-            return;
-        }
-        if (quantity <= 0) {
-            System.out.println("Invalid quantity for product: " + product.getName());
-            this.calculateTotal(); // Recalculate total to reflect no change
-            return;
-        }
-        this.productsInCart.put(product, 
-            this.productsInCart.getOrDefault(product, 0) + quantity); // 0 if product not in cart
-    }
 
     public void addProductToCart(Product product, int quantity) {
         if (product == null) {
@@ -57,39 +37,7 @@ public class Order {
         this.productsInCart.put(product, 
             this.productsInCart.getOrDefault(product, 0) + quantity); // 0 if product not in cart
     }
-
-    public void removeProductFromCart(String productName) {
-        Product product = getProductByName(productName);
-        if (product == null) {
-            System.out.println("Product not found: " + productName);
-            return;
-        }
-
-        if (this.productsInCart.containsKey(product)) {
-            this.productsInCart.remove(product);
-            System.out.println("Removed product: " + product.getName());
-        }
-        else {
-            System.out.println("Product not found in cart: " + product.getName());
-        }
-        this.calculateTotal(); // Recalculate total after removal
-    }
-
-    public void removeProductFromCart(Product product) {
-        if (product == null) {
-            System.out.println("Product cannot be null.");
-            return;
-        }
-
-        if (this.productsInCart.containsKey(product)) {
-            this.productsInCart.remove(product);
-            System.out.println("Removed product: " + product.getName());
-        }
-        else {
-            System.out.println("Product not found in cart: " + product.getName());
-        }
-        this.calculateTotal(); // Recalculate total after removal
-    }
+        
 
     public void removeProductFromCart(Product product, int quantity) {
         if (product == null) {
@@ -136,18 +84,6 @@ public class Order {
         return this.totalAmount;
     }
 
-    private Product getProductByName(String productName) {
-        Product product = productManager.getProductByName(productName);
-        if (product == null) {
-            System.out.println("Product not found: " + productName);
-        }
-        return product;
-    }
-
-    public List<Product> getAvailableProductsList() {
-        return productManager.getAllProducts();
-    }
-
     public String getOrderDetails() {
         StringBuilder details = new StringBuilder();
         details.append("Order ID: ").append(orderId).append("\n");
@@ -188,10 +124,6 @@ public class Order {
 
     public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
-    }
-
-    public void setCurrentState(IOrderState currentState) {
-        this.currentState = currentState;
     }
 
     public void setCustomerOfThisOrder(Customer customerOfThisOrder) {

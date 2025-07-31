@@ -48,16 +48,6 @@ public class ProductManager {
                 .collect(Collectors.toList());
     }
 
-    public void printAllProducts() {
-        List<Product> available = getAvailableProducts();
-        for (int i = 0; i < available.size(); i++) {
-            Product product = available.get(i);
-            System.out.println((i + 1) + ". " + product.getName() + 
-                " - $" + String.format("%.2f", product.getPrice()) + 
-                " (Stock: " + product.getAmountInStock() + ")");
-        }
-    }
-
     public void refreshProducts() {
         loadProducts();
     }
