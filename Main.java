@@ -15,53 +15,74 @@ public class Main {
     private static final ProductManager productManager = ProductManager.getInstance();
 
     public static void main(String[] args) {
-        Customer response = signInUpMenu();
-        if (response == null) {
-            return;
-        }
-
-        // Loop to allow creating new orders after cancellation
-        while (true) {
-            Order orderResponse = orderMenu(response);
-            if (orderResponse == null) {
-                // User chose to exit from order menu
+        int choice = 0;
+        do{
+            System.out.println("Choose your posistion: ");
+            System.out.println("1. Manager ");
+            System.out.println("2. Customer ");
+            System.out.println("-1. Exit ");
+            System.out.print("Your Choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+            if(choice == -1){
                 break;
             }
+            switch (choice) {
+                case 1:
+                    manageAccounts();
+                    break;
+                case 2:
+                    Customer response = signInUpMenu();
+                    if (response == null) {
+                        return;
+                    }
+                    // Loop to allow creating new orders after cancellation
+                    while (true) {
+                        Order orderResponse = orderMenu(response);
+                        if (orderResponse == null) {
+                            // User chose to exit from order menu
+                            break;
+                        }
 
-            Order wrapOrderResponse = wrapOrder(orderResponse, response);
-            if (wrapOrderResponse == null) {
-                System.out.println("Order wrapping cancelled. Starting over...");
-                continue;
+                        Order wrapOrderResponse = wrapOrder(orderResponse, response);
+                        if (wrapOrderResponse == null) {
+                            System.out.println("Order wrapping cancelled. Starting over...");
+                            continue;
+                        }
+
+                        IShippingStrategy shippingStrategy = shippingStrategyMenu();
+                        if (shippingStrategy == null) {
+                            System.out.println("Shipping strategy selection cancelled. Starting over...");
+                            continue;
+                        }
+
+                        Payment_Strategy payment = Payment_Strategy_Menu();
+                        if (payment == null) {
+                            System.out.println("Payment method selection cancelled. Starting over...");
+                            continue;
+                        }
+
+                        processWrappedOrder(wrapOrderResponse, shippingStrategy, payment);
+
+                        System.out.println("Would you like to create another order?");
+                        System.out.println("1. Yes, create another order");
+                        System.out.println("2. No, exit");
+                        System.out.print("Enter your choice: ");
+
+                        int continueChoice = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if (continueChoice != 1) {
+                            break; // Exit the loop
+                        }
+                    }
+
+                    System.out.println("Thank you for using our Online Order Processing System!");
+                    break;
+                default:
+                    break;
             }
-
-            IShippingStrategy shippingStrategy = shippingStrategyMenu();
-            if (shippingStrategy == null) {
-                System.out.println("Shipping strategy selection cancelled. Starting over...");
-                continue;
-            }
-
-            Payment_Strategy payment = Payment_Strategy_Menu();
-            if (payment == null) {
-                System.out.println("Payment method selection cancelled. Starting over...");
-                continue;
-            }
-
-            processWrappedOrder(wrapOrderResponse, shippingStrategy, payment);
-
-            System.out.println("Would you like to create another order?");
-            System.out.println("1. Yes, create another order");
-            System.out.println("2. No, exit");
-            System.out.print("Enter your choice: ");
-
-            int continueChoice = scanner.nextInt();
-            scanner.nextLine();
-
-            if (continueChoice != 1) {
-                break; // Exit the loop
-            }
-        }
-
-        System.out.println("Thank you for using our Online Order Processing System!");
+        }while(true);
     }
 
     private static void clearTerminal() {
@@ -75,6 +96,56 @@ public class Main {
             e.printStackTrace();
         }
     }
+
+    private static void manageAccounts() {
+        clearTerminal();
+        System.out.println("============== Manage Accounts ==============");
+        List<Customer> customers = customerManager.getAllCustomers();
+        if (customers == null || customers.isEmpty()) {
+            System.out.println("No accounts found.");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+        for (int i = 0; i < customers.size(); i++) {
+            Customer c = customers.get(i);
+            System.out.println((i + 1) + ". " + c.getCustomerId() + " | Name: " + c.getName() + " | Email: " + c.getEmail() + " | Phone: " + c.getPhoneNumber());
+        }
+        System.out.print("Select an account to delete or 0 to go back:");
+        int delChoice = scanner.nextInt();
+        scanner.nextLine();
+        if (delChoice == 0) {
+            return;
+        }
+        if (delChoice >= 1 && delChoice <= customers.size()) {
+            Customer selected = customers.get(delChoice - 1);
+            System.out.println("Are you sure you want to delete account: " + selected.getCustomerId() + " (" + selected.getName() + ")?");
+            System.out.println("1. Yes, delete");
+            System.out.println("2. No, cancel");
+            System.out.print("Enter your choice: ");
+            int confirm = scanner.nextInt();
+            scanner.nextLine();
+            if (confirm == 1) {
+                boolean removed = customerManager.removeCustomer(selected.getCustomerId());
+                if (removed) {
+                    System.out.println("Account deleted successfully.");
+                } else {
+                    System.out.println("Failed to delete account.");
+                }
+                System.out.println("Press Enter to continue...");
+                scanner.nextLine();
+            } else {
+                System.out.println("Account deletion cancelled.");
+                System.out.println("Press Enter to continue...");
+                scanner.nextLine();
+            }
+        } else {
+            System.out.println("Invalid choice. Please try again.");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+        }
+    }
+
 
     private static void processWrappedOrder(Order order, IShippingStrategy shippingStrategy, Payment_Strategy p) {
         int choice = 0;
@@ -112,12 +183,13 @@ public class Main {
                     if (!orderProcessed) {
                         // Process the order
                         clearTerminal();
-                        System.out.println("============== Processing Your Order ==============");
-                        System.out.println("Processing your order...");
-                        System.out.println("Press Enter to proceed with processing...");
-                        scanner.nextLine();
-
-                        try {
+                        int c = OrderConfirmMenu();
+                        if(c == 1){
+                            System.out.println("============== Processing Your Order ==============");
+                            System.out.println("Processing your order...");
+                            System.out.println("Press Enter to proceed with processing...");
+                            scanner.nextLine();
+                            try {
                             processingOrder = new OnlineOrderProcessing(order, shippingStrategy, p);
                             processingOrder.Process();
                             orderProcessed = true;
@@ -126,11 +198,14 @@ public class Main {
                             System.out.println("Press Enter to continue...");
                             scanner.nextLine();
 
-                        } catch (Exception e) {
-                            System.err.println("✗ Error processing order: " + e.getMessage());
-                            System.out.println("Press Enter to continue...");
-                            scanner.nextLine();
-                        }
+                            } catch (Exception e) {
+                                System.err.println("✗ Error processing order: " + e.getMessage());
+                                System.out.println("Press Enter to continue...");
+                                scanner.nextLine();
+                            }
+                        }else{
+                            return;
+                        }    
                     } else {
                         // View invoice
                         clearTerminal();
@@ -882,10 +957,11 @@ public class Main {
 
     public static Payment_Strategy Payment_Strategy_Menu() {
         int choice = 0;
+        boolean confirm = false;
         Payment_Strategy p = null;
         do {
             clearTerminal();
-            System.out.println("============== Select Shipping Strategy ==============");
+            System.out.println("============== Select Payment Method ==============");
             System.out.println("1. Pay Directly");
             System.out.println("2. Tranfer");
             System.out.println("3. Done");
@@ -918,6 +994,7 @@ public class Main {
                     }
                     break;
                 case 2:
+                    String bankName = null;
                     if (p != null && p instanceof Tranfer_Pay) {
                         System.out.println("Tranfer Pay Method is already selected.");
                         System.out.println("Press Enter to continue...");
@@ -925,17 +1002,73 @@ public class Main {
                     } else {
                         if (p != null) {
                             System.out.println("Switching to Tranfer Pay Methhod from " + p.getPName());
+                            System.out.println("Press Enter to continue...");
+                            scanner.nextLine();
                         } else {
                             System.out.println("Selected Tranfer Pay Method");
+                            System.out.println("Press Enter to continue...");
+                            scanner.nextLine();
                         }
-                        p = new Tranfer_Pay();
+                        do{
+                            clearTerminal();
+                            System.out.println("============== Select Bank ==============");
+                            System.out.println("1. Saccombank ");
+                            System.out.println("2. Agribank ");
+                            System.out.println("3. VietinBank ");
+                            System.out.println("4. BIDV ");
+                            System.out.println("-1. Done ");
+                            if(bankName!=null){
+                                System.out.println("Choosed Bank: "+bankName);
+                            }
+                            System.out.print("Choose options: ");
+                            int bankChoice = scanner.nextInt();
+                            scanner.nextLine();
+                            if(bankChoice == -1){
+                                break;
+                            }
+                            switch (bankChoice) {
+                                case 1:
+                                    if(bankName != null && bankName.equals("Saccombank")){
+                                        System.out.println("You have already choose this bank");
+                                    }else{
+                                        bankName = "Saccombank";
+                                    }
+                                    break;
+                                case 2:
+                                    if(bankName != null && bankName.equals("Agribank")){
+                                        System.out.println("You have already choose this bank");
+                                    }else{
+                                        bankName = "Agribank";
+                                    }
+                                    break;
+                                case 3:
+                                    if(bankName != null && bankName.equals("VietinBank")){
+                                        System.out.println("You have already choose this bank");
+                                    }else{
+                                        bankName = "VietinBank";
+                                    }
+                                    break;
+                                case 4:
+                                    if(bankName != null && bankName.equals("BIDV")){
+                                        System.out.println("You have already choose this bank");
+                                    }else{
+                                        bankName = "BIDV";
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }while(true);
+                        System.out.print("Enter Bank Account number: ");
+                        String bankAccount = scanner.nextLine();
+                        p = new Tranfer_Pay(bankAccount, bankName);
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     }
                     break;
                 case 3:
                     if (p == null) {
-                        System.out.println("No shipping strategy selected. Please select one before proceeding.");
+                        System.out.println("No payment method selected. Please select one before proceeding.");
                         scanner.nextLine();
                         continue;
                     }
@@ -944,7 +1077,7 @@ public class Main {
                     scanner.nextLine();
                     return p;
                 case -1:
-                    System.out.println("Exiting the shipping strategy selection. Goodbye!");
+                    System.out.println("Exiting the payment strategy selection. Goodbye!");
                     scanner.nextLine();
                     return null; // Exit the menu
                 default:
@@ -953,5 +1086,31 @@ public class Main {
             }
         } while (choice != -1);
         return p;
+    }
+    private static int OrderConfirmMenu(){
+        // boolean confirm = true;
+        int conf = 0;
+        do{
+            System.out.println("You confirm to pay for this order: ");
+            System.out.println("1. Yes");
+            System.out.println("2. No");
+            conf = scanner.nextInt();
+            scanner.nextLine();
+            switch (conf) {
+                case 1:
+                    System.out.println("You have confirm this order.");
+                    break;
+                case 2:
+                    System.out.println("You have confirm this order.");
+                    break;
+                default:
+                    System.out.println("You have to choose 'Yes' or 'No'!");
+                    break;
+            }
+            if(conf == 1||conf == 2){
+                break;
+            }
+        }while(true);
+        return conf;
     }
 }

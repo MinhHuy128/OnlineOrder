@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import Order.Order;
 import Payment_Method.Payment_Strategy;
+import Payment_Method.Tranfer_Pay;
 import Product.Product;
 import ShippingStrategy.IShippingStrategy;
 import Customer.*;
@@ -107,10 +108,18 @@ public class OnlineOrderProcessing extends ProcessingOrder {
         
         // Order details (includes decorator effects)
         System.out.println(this.orders.getOrderDetails());
-        System.out.println();
         // Payment method
         System.out.println("PAYMENT METHOD:");
+        System.out.println("=======================================");
         System.out.println("Method: " + payment.getPName());
+        if(payment.getBankName() != null){
+            System.out.println("---------------------------------------");
+            System.out.println("Bank Number: "+payment.getBankNumber());
+            System.out.println("Bank Number: "+payment.getBankName());
+            System.out.println("---------------------------------------");
+        }
+        System.out.println("=======================================");
+        System.out.println("");
         System.out.println("=======================================");
         // Shipping and totals
         System.out.println("SHIPPING DETAILS:");
