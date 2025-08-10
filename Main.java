@@ -3,7 +3,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import Customer.*;
+import Manager.Manager;
+import Manager.Managered;
 import Order.*;
+import OrderState.CancelledState;
+import OrderState.DeliveredState;
+import OrderState.ProcesingState;
+import OrderState.ShippingState;
 import Product.*;
 import Processing.*;
 import ShippingStrategy.*;
@@ -12,9 +18,11 @@ import Payment_Method.*;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final CustomerManager customerManager = new CustomerManager();
+    private static final Managered manage = new Managered();
     private static final ProductManager productManager = ProductManager.getInstance();
 
     public static void main(String[] args) {
+        Customer response = null;
         int choice = 0;
         do {
             clearTerminal();
@@ -30,10 +38,14 @@ public class Main {
             }
             switch (choice) {
                 case 1:
-                    manageAccounts();
+                    Manager managerResponse = managerSignInUpMenu();
+                    if (managerResponse == null) {
+                        return;
+                    }
+                    manageAccounts(response);
                     break;
                 case 2:
-                    Customer response = signInUpMenu();
+                    response = signInUpMenu();
                     if (response == null) {
                         return;
                     }
@@ -99,7 +111,7 @@ public class Main {
         }
     }
 
-    private static void manageAccounts() {
+    private static void manageAccounts(Customer customer) {
         do {
             clearTerminal();
             System.out.println("============== Manage Accounts ==============");
@@ -109,20 +121,68 @@ public class Main {
             System.out.println("-1. Done");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
+            scanner.nextLine();
             if (choice == -1) {
                 return;
             }
-            scanner.nextLine();
             switch (choice) {
                 case 1:
-                    clearTerminal();
                     manageCustomerList();
                     break;
                 case 2:
-                    clearTerminal();
                     manageCustomerListwOrder();
                     break;
                 case 3:
+                    if (customer != null) {
+                        if (customer.getOrderList().isEmpty()) {
+                            System.out.println("There is no orders to set state!");
+                        }
+                        System.out.print("Input Order ID you want to set: ");
+                        String id = scanner.nextLine();
+                        for (Order o : customer.getOrderList()) {
+                            if (id.equals(o.getOrderId())) {
+                                continue;
+                            } else {
+                                System.out.println("The Id Is Invalid or Don't Exist!");
+                                return;
+                            }
+                        }
+                        do {
+                            clearTerminal();
+                            System.out.println("1. Processing State");
+                            System.out.println("2. Delivered State");
+                            System.out.println("3. Cancelled State");
+                            System.out.println("4. Shipping State");
+                            System.out.println("-1. Done");
+                            System.out.print("Choose: ");
+                            int ch = scanner.nextInt();
+                            if (ch == -1) {
+                                break;
+                            }
+                            scanner.nextLine();
+                            switch (ch) {
+                                case 1:
+                                    customer.setState(id, new ProcesingState());
+                                    break;
+                                case 2:
+                                    customer.setState(id, new DeliveredState());
+                                    break;
+                                case 3:
+                                    customer.setState(id, new CancelledState());
+                                    break;
+                                case 4:
+                                    customer.setState(id, new ShippingState());
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } while (true);
+                        customer.setState(id, null);
+                    } else {
+                        System.out.println("This function is locked till there is customer sign in or sign up!");
+                        System.out.println("Press Enter to continue...");
+                        scanner.nextLine();
+                    }
                     break;
                 default:
                     System.out.println("Invalid choice.");
@@ -1183,5 +1243,97 @@ public class Main {
             }
         } while (true);
         return conf;
+    }
+
+    private static Manager managerSignInUpMenu() {
+        int choice = 0;
+        // Sign in or sign up menu
+        // Loop until user chooses to exit or successfully signs in or signs up
+        do {
+            clearTerminal();
+            System.out.println("============== Welcome to the Online Order Processing System ==============");
+            System.out.println("1. Sign in");
+            System.out.println("-1. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+
+            if (choice == -1) {
+                System.out.println("Exiting the system. Goodbye!");
+                System.out.println("Press Enter to exit...");
+                scanner.nextLine();
+                return null;
+            }
+
+            switch (choice) {
+                case 1:
+                    Manager manager = managerSignIn();
+                    if (manager != null) {
+                        System.out.println("Welcome back, " + manager.getName() + "!");
+                        System.out.println("Press Enter to continue...");
+                        scanner.nextLine();
+                        return manager; // Return the signed-in customer
+                    } else {
+                        System.out.println("Sign in cancelled.");
+                        scanner.nextLine();
+                        continue;
+                    }
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Press Enter to continue...");
+                    scanner.nextLine();
+                    continue; // Go back to the main menu
+            }
+        } while (choice != -1);
+        return null;
+    }
+
+    private static Manager managerSignIn() {
+        while (true) {
+            clearTerminal();
+            System.err.println("Welcome to the Sign In Page");
+            System.out.println("TYPE -1 TO EXIT");
+            System.out.print("Enter your email: ");
+            String email = scanner.nextLine();
+            if (email.equals("-1")) {
+                return null;
+            }
+
+            System.out.print("Enter your phone number: ");
+            String phone = scanner.nextLine();
+            if (phone.equals("-1")) {
+                return null; // User wants to exit
+            }
+
+            if (email.isEmpty() || phone.isEmpty()) {
+                System.out.println("Email and phone number cannot be empty.");
+                System.out.println("Press Enter to try again...");
+                scanner.nextLine();
+                continue;
+            }
+
+            Manager managerByEmail = manage.findCustomerByEmail(email);
+            Manager managerByPhone = manage.findCustomerByPhone(phone);
+
+            if (managerByEmail == null || managerByPhone == null) {
+                System.out.println("Invalid credentials. Customer not found.");
+                System.out.println("Press Enter to try again...");
+                scanner.nextLine();
+                continue;
+            }
+
+            if (!managerByEmail.getCustomerId().equals(managerByPhone.getCustomerId())) {
+                System.out
+                        .println("Email and phone number belong to different accounts. Please check your credentials.");
+                System.out.println("Press Enter to try again...");
+                scanner.nextLine();
+                continue;
+            }
+
+            clearTerminal();
+            System.out.println("Sign in successful!");
+            System.out.println(managerByEmail.getCustomerDetails());
+            return managerByEmail;
+        }
     }
 }

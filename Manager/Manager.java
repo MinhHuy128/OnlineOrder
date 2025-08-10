@@ -1,42 +1,36 @@
-package Customer;
+package Manager;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
-import Order.*;
-import OrderState.IOrderState;
 import Log.Logger;
 
-public class Customer {
-    private static int customerCount = 0;
+public class Manager {
+    private static int managerount = 0;
     private static boolean isFirstRun = false;
     private static final Logger logger = Logger.getInstance("logFile.log");
     private  final String CSV_PATH = Paths.get("CSVs", "customer.csv").toString();
-    private String customerId;
+    private String managerId;
     private String name;
     private String email;
     private String phoneNumber;
     private String address;
-    private ArrayList<Order> listOfOrder = new ArrayList<>();
 
-    public Customer(String name, String email, String phoneNumber, String address) {
+    public Manager(String name, String email, String phoneNumber, String address) {
         if (!isFirstRun) { // Avoid reset to 0 on every new run
-            customerCount = updateCount();
+            managerount = updateCount();
             isFirstRun = true;
         }
-        this.customerId = String.format("C%04d", ++customerCount);
+        this.managerId = String.format("M%04d", ++managerount);
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
     }
 
-    Customer(String customerId, String name, String email, String phoneNumber, String address) {
-        this.customerId = customerId;
+    Manager(String managerId, String name, String email, String phoneNumber, String address) {
+        this.managerId = managerId;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -66,11 +60,11 @@ public class Customer {
 
     public String getCustomerDetails() {
         return String.format("Customer ID: %s\nName: %s\nEmail: %s\nPhone: %s\nAddress: %s",
-                customerId, name, email, phoneNumber, address);
+                managerId, name, email, phoneNumber, address);
     }
 
     public String getCustomerId() {
-        return customerId;
+        return managerId;
     }
 
     public String getName() {
@@ -103,24 +97,5 @@ public class Customer {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public void addOrderList(Order order){
-        this.listOfOrder.add(order);
-    }
-    public void setState(String id, IOrderState state){
-        for(Order i : this.listOfOrder){
-            if(i.getOrderId().equals(id)){
-                i.setOrderState(state);
-                System.out.println("Order State is set to: "+i.getCurrentStateName());
-            }
-        }
-    }
-    public void delOrder(){
-        this.listOfOrder.remove(this.listOfOrder.size()-1);
-    }
-
-    public List<Order> getOrderList(){
-        return this.listOfOrder;
     }
 }
