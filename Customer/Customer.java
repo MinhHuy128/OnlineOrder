@@ -4,7 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
+import Order.*;
+import OrderState.IOrderState;
 import Log.Logger;
 
 public class Customer {
@@ -17,6 +21,7 @@ public class Customer {
     private String email;
     private String phoneNumber;
     private String address;
+    private ArrayList<Order> listOfOrder = new ArrayList<>();
 
     public Customer(String name, String email, String phoneNumber, String address) {
         if (!isFirstRun) { // Avoid reset to 0 on every new run
@@ -98,5 +103,23 @@ public class Customer {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public void addOrderList(Order order){
+        this.listOfOrder.add(order);
+    }
+    public void setState(String id, IOrderState state){
+        for(Order i : this.listOfOrder){
+            if(i.getOrderId().equals(id)){
+                i.setOrderState(state);
+            }
+        }
+    }
+    public void delOrder(){
+        this.listOfOrder.remove(this.listOfOrder.size()-1);
+    }
+
+    public List<Order> getOrderList(){
+        return this.listOfOrder;
     }
 }

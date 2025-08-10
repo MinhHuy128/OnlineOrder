@@ -117,5 +117,4 @@ public class CustomerManager {
             logger.log("Error creating CSV file: " + e.getMessage(), 4);
         }
     }
-
 }

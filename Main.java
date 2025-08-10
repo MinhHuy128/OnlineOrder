@@ -16,15 +16,16 @@ public class Main {
 
     public static void main(String[] args) {
         int choice = 0;
-        do{
-            System.out.println("Choose your posistion: ");
+        do {
+            clearTerminal();
+            System.out.println("============== SELECT ROLE ==============");
             System.out.println("1. Manager ");
             System.out.println("2. Customer ");
             System.out.println("-1. Exit ");
             System.out.print("Your Choice: ");
             choice = scanner.nextInt();
             scanner.nextLine();
-            if(choice == -1){
+            if (choice == -1) {
                 break;
             }
             switch (choice) {
@@ -62,7 +63,7 @@ public class Main {
                             continue;
                         }
 
-                        processWrappedOrder(wrapOrderResponse, shippingStrategy, payment);
+                        processWrappedOrder(response, wrapOrderResponse, shippingStrategy, payment);
 
                         System.out.println("Would you like to create another order?");
                         System.out.println("1. Yes, create another order");
@@ -80,9 +81,10 @@ public class Main {
                     System.out.println("Thank you for using our Online Order Processing System!");
                     break;
                 default:
+                    System.out.println("Invalid choice");
                     break;
             }
-        }while(true);
+        } while (true);
     }
 
     private static void clearTerminal() {
@@ -98,8 +100,38 @@ public class Main {
     }
 
     private static void manageAccounts() {
-        clearTerminal();
-        System.out.println("============== Manage Accounts ==============");
+        do {
+            clearTerminal();
+            System.out.println("============== Manage Accounts ==============");
+            System.out.println("1. Manage Account");
+            System.out.println("2. View All Current Order");
+            System.out.println("3. Change Order Status");
+            System.out.println("-1. Done");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            if (choice == -1) {
+                return;
+            }
+            scanner.nextLine();
+            switch (choice) {
+                case 1:
+                    clearTerminal();
+                    manageCustomerList();
+                    break;
+                case 2:
+                    clearTerminal();
+                    manageCustomerListwOrder();
+                    break;
+                case 3:
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        } while (true);
+    }
+
+    private static void manageCustomerList() {
         List<Customer> customers = customerManager.getAllCustomers();
         if (customers == null || customers.isEmpty()) {
             System.out.println("No accounts found.");
@@ -109,17 +141,21 @@ public class Main {
         }
         for (int i = 0; i < customers.size(); i++) {
             Customer c = customers.get(i);
-            System.out.println((i + 1) + ". " + c.getCustomerId() + " | Name: " + c.getName() + " | Email: " + c.getEmail() + " | Phone: " + c.getPhoneNumber());
+            System.out.println((i + 1) + ". " + c.getCustomerId() + " | Name: " + c.getName() + " | Email: "
+                    + c.getEmail() + " | Phone: " + c.getPhoneNumber());
         }
-        System.out.print("Select an account to delete or 0 to go back:");
+        // Delete Customer Account
+        System.out.print("Select an account to delete or 0 to go back: ");
         int delChoice = scanner.nextInt();
         scanner.nextLine();
         if (delChoice == 0) {
+            clearTerminal();
             return;
         }
         if (delChoice >= 1 && delChoice <= customers.size()) {
             Customer selected = customers.get(delChoice - 1);
-            System.out.println("Are you sure you want to delete account: " + selected.getCustomerId() + " (" + selected.getName() + ")?");
+            System.out.println("Are you sure you want to delete account: " + selected.getCustomerId() + " ("
+                    + selected.getName() + ")?");
             System.out.println("1. Yes, delete");
             System.out.println("2. No, cancel");
             System.out.print("Enter your choice: ");
@@ -146,8 +182,40 @@ public class Main {
         }
     }
 
+    private static void manageCustomerListwOrder() {
+        List<Customer> customers = customerManager.getAllCustomers();
+        if (customers == null || customers.isEmpty()) {
+            System.out.println("No accounts found.");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+        for (int i = 0; i < customers.size(); i++) {
+            Customer c = customers.get(i);
+            System.out.printf("%-5s. %-6s | Name: %-10s | Email: %-10s | Phone: %-10s \n", (i + 1), c.getCustomerId(),
+                    c.getName(), c.getEmail(), c.getPhoneNumber());
+            List<Order> orders = c.getOrderList();
+            if (orders.isEmpty()) {
+                System.out.printf("%-5s + %-10s", " ", "No Orders! \n");
+            } else {
+                for (Order f : orders) {
+                    System.out.printf("%-5s + %-8s %-10s %-10.2f \n", " ", f.getOrderId(), f.getCurrentStateName(),
+                            f.getTotalAmount());
+                }
+            }
+        }
+        System.out.print("Press 0 to get back: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        if (choice == 0) {
+            return;
+        } else {
+            System.out.println("Invalid choice.");
+        }
+    }
 
-    private static void processWrappedOrder(Order order, IShippingStrategy shippingStrategy, Payment_Strategy p) {
+    private static void processWrappedOrder(Customer customer, Order order, IShippingStrategy shippingStrategy,
+            Payment_Strategy p) {
         int choice = 0;
         boolean orderProcessed = false;
         ProcessingOrder processingOrder = null;
@@ -184,28 +252,28 @@ public class Main {
                         // Process the order
                         clearTerminal();
                         int c = OrderConfirmMenu();
-                        if(c == 1){
+                        if (c == 1) {
                             System.out.println("============== Processing Your Order ==============");
                             System.out.println("Processing your order...");
                             System.out.println("Press Enter to proceed with processing...");
                             scanner.nextLine();
                             try {
-                            processingOrder = new OnlineOrderProcessing(order, shippingStrategy, p);
-                            processingOrder.Process();
-                            orderProcessed = true;
+                                processingOrder = new OnlineOrderProcessing(order, shippingStrategy, p);
+                                processingOrder.Process();
+                                orderProcessed = true;
 
-                            System.out.println("\n✓ Order processing completed successfully!");
-                            System.out.println("Press Enter to continue...");
-                            scanner.nextLine();
+                                System.out.println("\n✓ Order processing completed successfully!");
+                                System.out.println("Press Enter to continue...");
+                                scanner.nextLine();
 
                             } catch (Exception e) {
                                 System.err.println("✗ Error processing order: " + e.getMessage());
                                 System.out.println("Press Enter to continue...");
                                 scanner.nextLine();
                             }
-                        }else{
+                        } else {
                             return;
-                        }    
+                        }
                     } else {
                         // View invoice
                         clearTerminal();
@@ -247,6 +315,7 @@ public class Main {
                             System.out.println("Thank you for using our service!");
                             System.out.println("Press Enter to exit...");
                             scanner.nextLine();
+                            customer.delOrder();
                             choice = -2;
                             break;
                         } else {
@@ -535,6 +604,7 @@ public class Main {
             switch (choice) {
                 case 1:
                     order = createNewOrder(customer);
+                    customer.addOrderList(order);
                     continue;
                 case 2:
                     if (order == null) {
@@ -578,7 +648,6 @@ public class Main {
         System.out.println("New order created with ID: " + newOrder.getOrderId());
         System.out.println("Press Enter to continue...");
         scanner.nextLine();
-
         while (true) {
             clearTerminal();
             System.out.println("============== Product Selection ==============");
@@ -610,6 +679,7 @@ public class Main {
 
             if (productChoice == -1) {
                 System.out.println("Order cancelled.");
+                customer.delOrder();
                 return null;
             }
 
@@ -957,7 +1027,6 @@ public class Main {
 
     public static Payment_Strategy Payment_Strategy_Menu() {
         int choice = 0;
-        boolean confirm = false;
         Payment_Strategy p = null;
         do {
             clearTerminal();
@@ -1009,7 +1078,7 @@ public class Main {
                             System.out.println("Press Enter to continue...");
                             scanner.nextLine();
                         }
-                        do{
+                        do {
                             clearTerminal();
                             System.out.println("============== Select Bank ==============");
                             System.out.println("1. Saccombank ");
@@ -1017,48 +1086,48 @@ public class Main {
                             System.out.println("3. VietinBank ");
                             System.out.println("4. BIDV ");
                             System.out.println("-1. Done ");
-                            if(bankName!=null){
-                                System.out.println("Choosed Bank: "+bankName);
+                            if (bankName != null) {
+                                System.out.println("Choosed Bank: " + bankName);
                             }
                             System.out.print("Choose options: ");
                             int bankChoice = scanner.nextInt();
                             scanner.nextLine();
-                            if(bankChoice == -1){
+                            if (bankChoice == -1) {
                                 break;
                             }
                             switch (bankChoice) {
                                 case 1:
-                                    if(bankName != null && bankName.equals("Saccombank")){
+                                    if (bankName != null && bankName.equals("Saccombank")) {
                                         System.out.println("You have already choose this bank");
-                                    }else{
+                                    } else {
                                         bankName = "Saccombank";
                                     }
                                     break;
                                 case 2:
-                                    if(bankName != null && bankName.equals("Agribank")){
+                                    if (bankName != null && bankName.equals("Agribank")) {
                                         System.out.println("You have already choose this bank");
-                                    }else{
+                                    } else {
                                         bankName = "Agribank";
                                     }
                                     break;
                                 case 3:
-                                    if(bankName != null && bankName.equals("VietinBank")){
+                                    if (bankName != null && bankName.equals("VietinBank")) {
                                         System.out.println("You have already choose this bank");
-                                    }else{
+                                    } else {
                                         bankName = "VietinBank";
                                     }
                                     break;
                                 case 4:
-                                    if(bankName != null && bankName.equals("BIDV")){
+                                    if (bankName != null && bankName.equals("BIDV")) {
                                         System.out.println("You have already choose this bank");
-                                    }else{
+                                    } else {
                                         bankName = "BIDV";
                                     }
                                     break;
                                 default:
                                     break;
                             }
-                        }while(true);
+                        } while (true);
                         System.out.print("Enter Bank Account number: ");
                         String bankAccount = scanner.nextLine();
                         p = new Tranfer_Pay(bankAccount, bankName);
@@ -1087,13 +1156,15 @@ public class Main {
         } while (choice != -1);
         return p;
     }
-    private static int OrderConfirmMenu(){
+
+    private static int OrderConfirmMenu() {
         // boolean confirm = true;
         int conf = 0;
-        do{
+        do {
             System.out.println("You confirm to pay for this order: ");
             System.out.println("1. Yes");
             System.out.println("2. No");
+            System.out.print("choose: ");
             conf = scanner.nextInt();
             scanner.nextLine();
             switch (conf) {
@@ -1107,10 +1178,10 @@ public class Main {
                     System.out.println("You have to choose 'Yes' or 'No'!");
                     break;
             }
-            if(conf == 1||conf == 2){
+            if (conf == 1 || conf == 2) {
                 break;
             }
-        }while(true);
+        } while (true);
         return conf;
     }
 }

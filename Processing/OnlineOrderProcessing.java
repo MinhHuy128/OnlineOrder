@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import Order.Order;
 import Payment_Method.Payment_Strategy;
-import Payment_Method.Tranfer_Pay;
 import Product.Product;
 import ShippingStrategy.IShippingStrategy;
 import Customer.*;
