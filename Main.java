@@ -156,10 +156,13 @@ public class Main {
                             do {
                             clearTerminal();
                             System.out.println("1. Processing State");
-                            System.out.println("2. Delivered State");
-                            System.out.println("3. Cancelled State");
-                            System.out.println("4. Shipping State");
+                            System.out.println("2. Shipping State");
+                            System.out.println("3. Delivered State");
+                            System.out.println("4. Cancelled State");
                             System.out.println("-1. Done");
+                            for(Order o:customer.getOrderList()){
+                                System.out.println("Order: "+o.getOrderId()+". Current State: "+o.getCurrentState().getStateName());
+                            }
                             System.out.print("Choose: ");
                             int ch = scanner.nextInt();
                             if (ch == -1) {
@@ -171,13 +174,13 @@ public class Main {
                                     customer.setState(id, new ProcesingState());
                                     break;
                                 case 2:
-                                    customer.setState(id, new DeliveredState());
+                                    customer.setState(id, new ShippingState());
                                     break;
                                 case 3:
-                                    customer.setState(id, new CancelledState());
+                                    customer.setState(id, new DeliveredState());
                                     break;
                                 case 4:
-                                    customer.setState(id, new ShippingState());
+                                    customer.setState(id, new CancelledState());
                                     break;
                                 default:
                                     break;
@@ -258,18 +261,19 @@ public class Main {
             scanner.nextLine();
             return;
         }
+        int count = 0;
         for (int i = 0; i < customers.size(); i++) {
             Customer c = customers.get(i);
-            System.out.printf("%-5s. %-6s | Name: %-10s | Email: %-10s | Phone: %-10s \n", (i + 1), c.getCustomerId(),
+            if(!c.getOrderList().isEmpty()){
+                System.out.printf("%-5s. %-6s | Name: %-10s | Email: %-10s | Phone: %-10s \n", (count + 1), c.getCustomerId(),
                     c.getName(), c.getEmail(), c.getPhoneNumber());
-            List<Order> orders = c.getOrderList();
-            if (orders.isEmpty()) {
-                System.out.printf("%-5s + %-10s", " ", "No Orders! \n");
-            } else {
+                List<Order> orders = c.getOrderList();
                 for (Order f : orders) {
-                    System.out.printf("%-5s + %-8s %-10s %-10.2f \n", " ", f.getOrderId(), f.getCurrentState().getStateName(),
-                            f.getTotalAmount());
+                    System.out.println(f.getOrderDetails());
+                    // System.out.printf("%-5s + %-8s %-10s %-10.2f \n", " ", f.getOrderId(), f.getCurrentState().getStateName(),
+                    //         f.getTotalAmount());
                 }
+                count++;
             }
         }
         System.out.print("Press 0 to get back: ");
