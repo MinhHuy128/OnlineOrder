@@ -2,13 +2,14 @@ package Order;
 
 import java.util.HashMap;
 import OrderState.IOrderState;
+import OrderState.NewOrderState;
 import Product.Product;
 import Customer.Customer;
 
 
 public class Order {
-    private HashMap<Product, Integer> productsInCart;
-    protected IOrderState currentState;
+    private HashMap<Product, Integer> productsInCart = new HashMap<>();
+    protected IOrderState currentState = new NewOrderState();
     private Customer customerOfThisOrder;
     private String orderId;
     private double totalAmount;

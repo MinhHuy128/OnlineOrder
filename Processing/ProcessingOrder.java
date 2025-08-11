@@ -2,6 +2,7 @@ package Processing;
 
 import Order.Order;
 import OrderState.*;
+import Payment_Method.Payment_Strategy;
 import ShippingStrategy.*;
 import Customer.Customer;
 
@@ -10,12 +11,14 @@ public abstract class ProcessingOrder{
     protected Customer customers;
     protected IShippingStrategy shippingStrategy;
     protected IOrderState state;
+    protected Payment_Strategy payment;
 
-    public ProcessingOrder(Order order, IShippingStrategy shippingStrategy) {
+    public ProcessingOrder(Order order, IShippingStrategy shippingStrategy, Payment_Strategy payment) {
         this.orders = order; // This holds the decorated order
         this.shippingStrategy = shippingStrategy;
         this.customers = order.getCustomerOfThisOrder();
         this.state = new ProcesingState(); // Set initial state to Processing
+        this.payment = payment;
         // Don't set state here - let Process() method handle it
     }
 

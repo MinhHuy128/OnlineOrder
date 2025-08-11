@@ -1,4 +1,4 @@
-package Customer;
+package Manager;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -6,57 +6,57 @@ import java.util.ArrayList;
 import java.util.List;
 import Log.Logger;
 
-public class CustomerManager {
-    private List<Customer> customerList;
-    private String csvFilePath = Paths.get("CSVs", "customer.csv").toString();
-    private static final String CSV_HEADER = "CustomerId,Name,Email,PhoneNumber,Address";
+public class Managered {
+    private List<Manager> managerList;
+    private String csvFilePath = Paths.get("CSVs", "manager.csv").toString();
+    private static final String CSV_HEADER = "ManagerId,Name,Email,PhoneNumber,Address";
     private static final Logger logger = Logger.getInstance("logFile.log");
 
-    public CustomerManager() {
-        this.customerList = new ArrayList<>();
-        this.loadCustomersFromCSV();
+    public Managered() {
+        this.managerList = new ArrayList<>();
+        this.loadManagersFromCSV();
     }
 
-    public void addCustomer(Customer customer) {
-        this.customerList.add(customer);
+    public void addCustomer(Manager manager) {
+        this.managerList.add(manager);
         this.saveCustomersToCSV(); // Persist changes
     }
 
-    public Customer findCustomerById(String customerId) {
-        return this.customerList.stream()
-                .filter(customer -> customer.getCustomerId().equals(customerId))
+    public Manager findCustomerById(String managerId) {
+        return this.managerList.stream()
+                .filter(manager -> manager.getCustomerId().equals(managerId))
                 .findFirst()
                 .orElse(null);
     }
 
-    public Customer findCustomerByPhone(String phoneNumber) {
-        return this.customerList.stream()
-                .filter(customer -> customer.getPhoneNumber().equals(phoneNumber))
+    public Manager findCustomerByPhone(String phoneNumber) {
+        return this.managerList.stream()
+                .filter(manager -> manager.getPhoneNumber().equals(phoneNumber))
                 .findFirst()
                 .orElse(null);
     }
 
-    public Customer findCustomerByEmail(String email) {
-        return this.customerList.stream()
-                .filter(customer -> customer.getEmail().equalsIgnoreCase(email))
+    public Manager findCustomerByEmail(String email) {
+        return this.managerList.stream()
+                .filter(manager -> manager.getEmail().equalsIgnoreCase(email))
                 .findFirst()
                 .orElse(null);
     }
 
-    public boolean removeCustomer(String customerId) {
-        boolean removed = this.customerList.removeIf(customer -> 
-            customer.getCustomerId().equals(customerId));
+    public boolean removeCustomer(String managerId) {
+        boolean removed = this.managerList.removeIf(manager -> 
+            manager.getCustomerId().equals(managerId));
         if (removed) {
             this.saveCustomersToCSV(); 
         }
         return removed;
     }
 
-    public List<Customer> getAllCustomers() {
-        return new ArrayList<>(this.customerList); 
+    public List<Manager> getAllManagers() {
+        return new ArrayList<>(this.managerList); 
     }
 
-    private void loadCustomersFromCSV() {
+    private void loadManagersFromCSV() {
         try (BufferedReader reader = new BufferedReader(new FileReader(this.csvFilePath))) {
             String line;
             boolean isFirstLine = true;
@@ -69,14 +69,14 @@ public class CustomerManager {
                 
                 String[] values = line.split(",");
                 if (values.length >= 5) {
-                    Customer customer = new Customer(
+                    Manager customer = new Manager(
                         values[0].trim(),
                         values[1].trim(),
                         values[2].trim(),
                         values[3].trim(),
                         values[4].trim()
                     );
-                    this.customerList.add(customer);
+                    this.managerList.add(customer);
                 }
             }
         } catch (IOException e) {
@@ -92,7 +92,7 @@ public class CustomerManager {
             writer.write(CSV_HEADER);
             writer.newLine();
             
-            for (Customer customer : this.customerList) {
+            for (Manager customer : this.managerList) {
                 String customerData = String.format("%s,%s,%s,%s,%s",
                     customer.getCustomerId(),
                     customer.getName(),
