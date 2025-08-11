@@ -110,9 +110,9 @@ public class Customer {
     }
     public void setState(String id, IOrderState state){
         for(Order i : this.listOfOrder){
-            if(i.getOrderId().equals(id)){
-                i.setOrderState(state);
-                System.out.println("Order State is set to: "+i.getCurrentStateName());
+            if(i.getOrderId().equalsIgnoreCase(id)){
+                i.setState(state);
+                System.out.println("Order State is set to: "+i.getCurrentState().getStateName());
             }
         }
     }

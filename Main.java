@@ -133,6 +133,7 @@ public class Main {
                     manageCustomerListwOrder();
                     break;
                 case 3:
+                    boolean isRunning = false;
                     if (customer != null) {
                         if (customer.getOrderList().isEmpty()) {
                             System.out.println("There is no orders to set state!");
@@ -141,13 +142,18 @@ public class Main {
                         String id = scanner.nextLine();
                         for (Order o : customer.getOrderList()) {
                             if (id.equals(o.getOrderId())) {
+                                isRunning = true;
                                 continue;
                             } else {
                                 System.out.println("The Id Is Invalid or Don't Exist!");
-                                return;
+                                isRunning = false;
+                                System.out.println("Press Enter to Continue...");
+                                scanner.nextLine();
+                                break;
                             }
                         }
-                        do {
+                        if(isRunning == true){
+                            do {
                             clearTerminal();
                             System.out.println("1. Processing State");
                             System.out.println("2. Delivered State");
@@ -176,8 +182,10 @@ public class Main {
                                 default:
                                     break;
                             }
-                        } while (true);
-                        customer.setState(id, null);
+                            } while (true);
+                        }else{
+                            break;
+                        }
                     } else {
                         System.out.println("This function is locked till there is customer sign in or sign up!");
                         System.out.println("Press Enter to continue...");
@@ -259,7 +267,7 @@ public class Main {
                 System.out.printf("%-5s + %-10s", " ", "No Orders! \n");
             } else {
                 for (Order f : orders) {
-                    System.out.printf("%-5s + %-8s %-10s %-10.2f \n", " ", f.getOrderId(), f.getCurrentStateName(),
+                    System.out.printf("%-5s + %-8s %-10s %-10.2f \n", " ", f.getOrderId(), f.getCurrentState().getStateName(),
                             f.getTotalAmount());
                 }
             }

@@ -115,16 +115,8 @@ public class Order {
         return customerOfThisOrder;
     }
 
-    public void setOrderState(IOrderState state){
-        this.currentState = state;
-    }
-
     public IOrderState getCurrentState() {
         return this.currentState;
-    }
-
-    public String getCurrentStateName(){
-        return this.currentState.getStateName();
     }
 
     public double getTotalAmount() {
