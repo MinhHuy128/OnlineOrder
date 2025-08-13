@@ -63,13 +63,13 @@ public class Main {
                             continue;
                         }
 
-                        IShippingStrategy shippingStrategy = shippingStrategyMenu();
+                        IShippingStrategy shippingStrategy = shippingStrategyMenu(orderResponse);
                         if (shippingStrategy == null) {
                             System.out.println("Shipping strategy selection cancelled. Starting over...");
                             continue;
                         }
 
-                        Payment_Strategy payment = Payment_Strategy_Menu();
+                        Payment_Strategy payment = Payment_Strategy_Menu(orderResponse);
                         if (payment == null) {
                             System.out.println("Payment method selection cancelled. Starting over...");
                             continue;
@@ -432,9 +432,8 @@ public class Main {
         }
     }
 
-    private static IShippingStrategy shippingStrategyMenu() {
+    private static IShippingStrategy shippingStrategyMenu(Order order) {
         int choice = 0;
-        IShippingStrategy shippingStrategy = null;
         do {
             clearTerminal();
             System.out.println("============== Select Shipping Strategy ==============");
@@ -443,8 +442,7 @@ public class Main {
             System.out.println("3. Express Shipping");
             System.out.println("4. Done");
             System.out.println("-1. Exit");
-            System.out.println("Current Shipping Strategy: " +
-                    (shippingStrategy != null ? shippingStrategy.getMethodName() : "None"));
+            System.out.println("Current Shipping Strategy: " + order.getShippingStrategy().getMethodName());
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
             scanner.nextLine();
@@ -458,68 +456,68 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    if (shippingStrategy != null && shippingStrategy instanceof EconomyShipping) {
+                    if (order.getShippingStrategy() != null && order.getShippingStrategy() instanceof EconomyShipping) {
                         System.out.println("Economy Shipping is already selected.");
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     } else {
-                        if (shippingStrategy != null) {
+                        if (order.getShippingStrategy() != null) {
                             System.out
-                                    .println("Switching to Economy Shipping from " + shippingStrategy.getMethodName());
+                                    .println("Switching to Economy Shipping from " + order.getShippingStrategy().getMethodName());
                         } else {
                             System.out.println("Selected Economy Shipping");
                         }
-                        shippingStrategy = new EconomyShipping();
+                        order.setShippingMethod(new EconomyShipping());
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     }
                     continue;
 
                 case 2:
-                    if (shippingStrategy != null && shippingStrategy instanceof StandardShipping) {
+                    if (order.getShippingStrategy() != null && order.getShippingStrategy() instanceof StandardShipping) {
                         System.out.println("Standard Shipping is already selected.");
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     } else {
-                        if (shippingStrategy != null) {
+                        if (order.getShippingStrategy() != null) {
                             System.out
-                                    .println("Switching to Standard Shipping from " + shippingStrategy.getMethodName());
+                                    .println("Switching to Standard Shipping from " + order.getShippingStrategy().getMethodName());
                         } else {
                             System.out.println("Selected Standard Shipping");
                         }
-                        shippingStrategy = new StandardShipping();
+                        order.setShippingMethod(new StandardShipping());
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     }
                     continue;
 
                 case 3:
-                    if (shippingStrategy != null && shippingStrategy instanceof ExpressShipping) {
+                    if (order.getShippingStrategy() != null && order.getShippingStrategy() instanceof ExpressShipping) {
                         System.out.println("Express Shipping is already selected.");
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     } else {
-                        if (shippingStrategy != null) {
+                        if (order.getShippingStrategy() != null) {
                             System.out
-                                    .println("Switching to Express Shipping from " + shippingStrategy.getMethodName());
+                                    .println("Switching to Express Shipping from " + order.getShippingStrategy().getMethodName());
                         } else {
                             System.out.println("Selected Express Shipping");
                         }
-                        shippingStrategy = new ExpressShipping();
+                        order.setShippingMethod(new ExpressShipping());
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     }
                     continue;
                 case 4:
-                    if (shippingStrategy == null) {
+                    if (order.getShippingStrategy() == null) {
                         System.out.println("No shipping strategy selected. Please select one before proceeding.");
                         scanner.nextLine();
                         continue;
                     }
-                    System.out.println("You have selected: " + shippingStrategy.getMethodName());
+                    System.out.println("You have selected: " + order.getShippingStrategy().getMethodName());
                     System.out.println("Press Enter to continue...");
                     scanner.nextLine();
-                    return shippingStrategy;
+                    return order.getShippingStrategy();
                 case -1:
                     System.out.println("Exiting the shipping strategy selection. Goodbye!");
                     scanner.nextLine();
@@ -529,7 +527,7 @@ public class Main {
                     continue; // Go back to the menu
             }
         } while (choice != -1);
-        return shippingStrategy; // Return the selected shipping strategy
+        return order.getShippingStrategy(); // Return the selected shipping strategy
     }
 
     private static Order wrapOrder(Order order, Customer customer) {
@@ -1097,9 +1095,8 @@ public class Main {
         }
     }
 
-    public static Payment_Strategy Payment_Strategy_Menu() {
+    public static Payment_Strategy Payment_Strategy_Menu(Order order) {
         int choice = 0;
-        Payment_Strategy p = null;
         do {
             clearTerminal();
             System.out.println("============== Select Payment Method ==============");
@@ -1107,8 +1104,14 @@ public class Main {
             System.out.println("2. Tranfer");
             System.out.println("3. Done");
             System.out.println("-1. Exit");
-            System.out.println("Current Payment Method: " +
-                    (p != null ? p.getPName() : "None"));
+            if(order.getPaymentStrategy() instanceof Tranfer_Pay){
+                System.out.println("Current Payment Method: "+ order.getPaymentStrategy().getPName());
+                System.out.println("Current Bank Method: "+ order.getPaymentStrategy().getBankName());
+                System.out.println("Current Bank Account: "+ order.getPaymentStrategy().getBankNumber());
+            }
+            else{
+                System.out.println("Current Payment Method: "+ order.getPaymentStrategy().getPName());
+            }
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
             scanner.nextLine();
@@ -1119,30 +1122,30 @@ public class Main {
             }
             switch (choice) {
                 case 1:
-                    if (p != null && p instanceof Directly_Pay) {
+                    if (order.getPaymentStrategy() != null && order.getPaymentStrategy() instanceof Directly_Pay) {
                         System.out.println("Directly Pay Method is already selected.");
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     } else {
-                        if (p != null) {
-                            System.out.println("Switching to Directly Pay Method from " + p.getPName());
+                        if (order.getPaymentStrategy() != null) {
+                            System.out.println("Switching to Directly Pay Method from " + order.getPaymentStrategy().getPName());
                         } else {
                             System.out.println("Selected Directly Pay Method");
                         }
-                        p = new Directly_Pay();
+                        order.setPaymentMethod(new Directly_Pay());
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     }
                     break;
                 case 2:
                     String bankName = null;
-                    if (p != null && p instanceof Tranfer_Pay) {
+                    if (order.getPaymentStrategy() != null && order.getPaymentStrategy() instanceof Tranfer_Pay) {
                         System.out.println("Tranfer Pay Method is already selected.");
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     } else {
-                        if (p != null) {
-                            System.out.println("Switching to Tranfer Pay Methhod from " + p.getPName());
+                        if (order.getPaymentStrategy() != null) {
+                            System.out.println("Switching to Tranfer Pay Methhod from " + order.getPaymentStrategy().getPName());
                             System.out.println("Press Enter to continue...");
                             scanner.nextLine();
                         } else {
@@ -1202,21 +1205,21 @@ public class Main {
                         } while (true);
                         System.out.print("Enter Bank Account number: ");
                         String bankAccount = scanner.nextLine();
-                        p = new Tranfer_Pay(bankAccount, bankName);
+                        order.setPaymentMethod(new Tranfer_Pay(bankAccount, bankName));
                         System.out.println("Press Enter to continue...");
                         scanner.nextLine();
                     }
                     break;
                 case 3:
-                    if (p == null) {
+                    if (order.getPaymentStrategy() == null) {
                         System.out.println("No payment method selected. Please select one before proceeding.");
                         scanner.nextLine();
                         continue;
                     }
-                    System.out.println("You have selected: " + p.getPName());
+                    System.out.println("You have selected: " + order.getPaymentStrategy().getPName());
                     System.out.println("Press Enter to continue...");
                     scanner.nextLine();
-                    return p;
+                    return order.getPaymentStrategy();
                 case -1:
                     System.out.println("Exiting the payment strategy selection. Goodbye!");
                     scanner.nextLine();
@@ -1226,7 +1229,7 @@ public class Main {
                     continue; // Go back to the menu
             }
         } while (choice != -1);
-        return p;
+        return order.getPaymentStrategy();
     }
 
     private static int OrderConfirmMenu() {

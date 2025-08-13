@@ -3,13 +3,19 @@ package Order;
 import java.util.HashMap;
 import OrderState.IOrderState;
 import OrderState.NewOrderState;
+import Payment_Method.Directly_Pay;
+import Payment_Method.Payment_Strategy;
 import Product.Product;
+import ShippingStrategy.EconomyShipping;
+import ShippingStrategy.IShippingStrategy;
 import Customer.Customer;
 
 
 public class Order {
     private HashMap<Product, Integer> productsInCart = new HashMap<>();
-    protected IOrderState currentState = new NewOrderState();
+    protected IOrderState currentState;
+    private IShippingStrategy currentShipping;
+    private Payment_Strategy payment; 
     private Customer customerOfThisOrder;
     private String orderId;
     private double totalAmount;
@@ -19,6 +25,8 @@ public class Order {
         this.customerOfThisOrder = customerOfThisOrder;
         // Initialize the order with an empty cart and set the initial state
         this.currentState = new OrderState.NewOrderState(); 
+        this.currentShipping = new EconomyShipping();
+        this.payment = new Directly_Pay();
         this.orderId = String.format("OId%05d", ++orderCounter);
         this.productsInCart = new HashMap<>();
         System.out.println("New order created with state: " + currentState.getStateName());
@@ -70,6 +78,22 @@ public class Order {
             int quantity = productsInCart.get(product);
             System.out.println("Product: " + product.getName() + ", Quantity: " + quantity);
         }
+    }
+
+    public void setPaymentMethod(Payment_Strategy p){
+        this.payment = p;
+    }
+
+    public Payment_Strategy getPaymentStrategy(){
+        return this.payment;
+    }
+
+    public void setShippingMethod(IShippingStrategy strategy){
+        this.currentShipping = strategy;
+    }
+
+    public IShippingStrategy getShippingStrategy(){
+        return this.currentShipping;
     }
 
     public void setState(IOrderState state) {
